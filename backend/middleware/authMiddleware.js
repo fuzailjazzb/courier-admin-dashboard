@@ -1,19 +1,46 @@
 const jwt = require("jsonwebtoken");
+const Admin = require("../models/admin");
 
-const protect = (req, res, next) => {
-  let token = req.headers.authorization;
+// ✅ Protect Admin Routes
+exports.protectAdmin = async (req, res, next) => {
+  let token;
 
-  if (!token) {
-    return res.status(401).json({ msg: "No Token Provided ❌" });
+  // Token Header Check
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    try {
+      // Extract Token
+      token = req.headers.authorization.split(" ")[1];
+
+      // Verify Token
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      // Find Admin
+      req.admin = await Admin.findById(decoded.id).select("-password");
+
+      if (!req.admin) {
+        return res.status(401).json({
+          success: false,
+          message: "Admin not found",
+        });
+      }
+
+      next(); // ✅ Allow Request
+    } catch (error) {
+      return res.status(401).json({
+        success: false,
+        message: "Token Invalid",
+      });
+    }
   }
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.admin = decoded;
-    next();
-  } catch (err) {
-    return res.status(401).json({ msg: "Invalid Token ❌" });
+  // No Token
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: "No Token, Unauthorized",
+    });
   }
 };
-
-module.exports = protect;

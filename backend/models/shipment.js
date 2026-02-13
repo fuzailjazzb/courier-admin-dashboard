@@ -1,22 +1,36 @@
 const mongoose = require("mongoose");
 
-const shipmentSchema = new mongoose.Schema({
-  pickup: {
-    type: String,
-    required: true
+const shipmentSchema = new mongoose.Schema(
+  {
+    orderId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+
+    customerName: String,
+    phone: String,
+
+    deliveryAddress: Object,
+
+    weight: Number,
+
+    status: {
+      type: String,
+      default: "Not Booked",
+    },
+
+    awbNumber: {
+      type: String,
+      default: null,
+    },
+
+    courierPartner: {
+      type: String,
+      default: null,
+    },
   },
-  delivery: {
-    type: String,
-    required: true
-  },
-  status: {
-    type: String,
-    default: "Pending"
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
-});
+  { timestamps: true }
+);
 
 module.exports = mongoose.model("Shipment", shipmentSchema);

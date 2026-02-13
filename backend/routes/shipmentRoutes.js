@@ -1,24 +1,25 @@
 const express = require("express");
-const Shipment = require("../models/shipment");
-const protect = require("../middleware/authMiddleware");
-
 const router = express.Router();
 
-/* Create Shipment */
-router.post("/create", protect, async (req, res) => {
-  const shipment = await Shipment.create(req.body);
+const {
+  createShipment,
+  trackShipment,
+} = require("../controllers/shipmentController");
 
-  res.json({
-    msg: "Shipment Created ✅",
-    shipment
-  });
-});
+// ✅ Middleware Import
+const { protectAdmin } = require("../middleware/authMiddleware");
 
-/* Get All Shipments */
-router.get("/all", protect, async (req, res) => {
-  const shipments = await Shipment.find().sort({ createdAt: -1 });
+// ✅ Create Shipment + Save + API Booking
+router.post("/create", createShipment);
 
-  res.json(shipments);
-});
+
+// ✅ Track Shipment
+router.post("/track", trackShipment);
+
+// Track all shipments (for testing)
+
+
+// track by orderId
+
 
 module.exports = router;

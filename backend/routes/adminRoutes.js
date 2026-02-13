@@ -1,40 +1,21 @@
 const express = require("express");
-const Admin = require("../models/admin");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-
 const router = express.Router();
 
-/* Create Default Admin (Run Once) */
-router.get("/create", async (req, res) => {
-  const admin = await Admin.create({
-    email: "admin@gmail.com",
-    password: "123456"
-  });
+const {
+  loginAdmin,
+} = require("../controllers/adminController");
 
+const { protectAdmin } = require("../middleware/authMiddleware");
+
+// ✅ Login Route
+router.post("/login", loginAdmin);
+
+// ✅ Protected Dashboard Route
+router.get("/dashboard", protectAdmin, (req, res) => {
   res.json({
-    msg: "Admin Created ✅",
-    admin
-  });
-});
-
-/* Admin Login */
-router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-
-  const admin = await Admin.findOne({ email });
-  if (!admin) return res.status(400).json({ msg: "Admin Not Found ❌" });
-
-  const isMatch = await bcrypt.compare(password, admin.password);
-  if (!isMatch) return res.status(400).json({ msg: "Wrong Password ❌" });
-
-  const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, {
-    expiresIn: "1d"
-  });
-
-  res.json({
-    msg: "Login Success ✅",
-    token
+    success: true,
+    message: "Welcome Admin Dashboard",
+    admin: req.admin,
   });
 });
 
