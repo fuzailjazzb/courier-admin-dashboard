@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shipments</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: #f5f7fb;
+      display: flex;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      height: 100vh;
+      background: linear-gradient(to bottom, #0f172a, #1e293b);
+      color: white;
+      padding: 25px;
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
+
+    .sidebar h2 {
+      font-size: 22px;
+      margin-bottom: 40px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .menu a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      color: white;
+      text-decoration: none;
+      font-size: 16px;
+      transition: 0.3s;
+    }
+
+    .menu a:hover,
+    .menu a.active {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .main {
+      margin-left: 300px;
+      padding: 25px;
+      width: 100%;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      background: white;
+      border-radius: 15px;
+      border-collapse: collapse;
+      overflow: hidden;
+      box-shadow: 0 5px 12px rgba(0,0,0,0.08);
+    }
+
+    th {
+      background: #2563eb;
+      color: white;
+      padding: 12px;
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    tr:hover {
+      background: #f9fafb;
+    }
+
+    .status {
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .pending {
+      background: #fde68a;
+      color: #92400e;
+    }
+
+    .delivered {
+      background: #bbf7d0;
+      color: #166534;
+    }
+  </style>
+</head>
+
+<body>
+
+ <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>🚚 Courier Admin</h2>
+
+    <div class="menu">
+      <a href="dashboard.html">📊 Dashboard</a>
+      <a href="add-shipment.html">📑 Add Shipment</a>
+      <a href="shipments.html" class="active">📦 View Shipments</a>
+      <a href="customers.html">👤 Customers</a>
+      <a href="#" onclick="logout()">🚪 Logout</a>
+    </div>
+  </div>
+
+
+  <div class="main">
+    <h1>📦 All Shipments</h1>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Pickup</th>
+          <th>Delivery</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+
+      <tbody id="shipmentList"></tbody>
+    </table>
+  </div>
+
+  <script>
+    let shipments = [
+      { pickup: "Patna", delivery: "Delhi", status: "Pending" },
+      { pickup: "Mumbai", delivery: "Bangalore", status: "Delivered" },
+      { pickup: "Kolkata", delivery: "Jaipur", status: "Pending" }
+    ];
+
+    function loadShipments() {
+      let list = document.getElementById("shipmentList");
+      list.innerHTML = "";
+
+      shipments.forEach(s => {
+        list.innerHTML += `
+          <tr>
+            <td>${s.pickup}</td>
+            <td>${s.delivery}</td>
+            <td>
+              <span class="status ${s.status === "Pending" ? "pending" : "delivered"}">
+                ${s.status}
+              </span>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    loadShipments();
+
+     
+    function logout() {
+      localStorage.removeItem("adminToken");
+      window.location.href = "login.html";
+    }
+
+  </script>
+
+</body>
+</html>
