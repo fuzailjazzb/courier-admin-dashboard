@@ -479,113 +479,80 @@
     const BACKEND_URL = "https://nxtship-backend.onrender.com";
 
     // ✅ Check Login
+    const token = localStorage.getItem("adminToken");
 
-    if (!localStorage.getItem("adminToken")) {
-
+    if (!token) {
       alert("Please login first!");
-
       window.location.href = "login.html";
-
     }
 
-    // ✅ Load Dashboard Data from MongoDB
-
+    // ✅ Load Dashboard Data
     async function loadDashboard() {
-
       try {
-
-        const token = localStorage.getItem("adminToken");
-
         const res = await fetch(`${BACKEND_URL}/api/shipment/all`, {
           method: "GET",
           headers: {
-            Authorization: "Bearer " + token,
-
+            Authorization: `Bearer ${token}`,
           },
-        },
-      );
+        });
 
-      localStorage.setItem("adminToken", data.token);
+        const data = await res.json();
 
-    const data = await res.json();
+        if (!data.success) {
+          alert("Failed to load shipments ❌");
+          return;
+        }
 
-    if (!data.success) {
+        const shipments = data.shipments;
 
-      alert("Failed to load shipments ❌");
+        // ✅ Counts
+        document.getElementById("totalShipments").innerText =
+          shipments.length;
 
-      return;
+        const pending = shipments.filter(
+          (s) => s.status !== "Delivered"
+        ).length;
 
-    }
+        const delivered = shipments.filter(
+          (s) => s.status === "Delivered"
+        ).length;
 
-    const shipments = data.shipments;
+        document.getElementById("pendingOrders").innerText = pending;
+        document.getElementById("deliveredOrders").innerText = delivered;
 
-    // ✅ Counts
+        // ✅ Table
+        const table = document.getElementById("shipmentTable");
+        table.innerHTML = "";
 
-    document.getElementById("totalShipments").innerText = shipments.length;
-
-    const pending = shipments.filter(s => s.status !== "Delivered").length;
-
-    const delivered = shipments.filter(s => s.status === "Delivered").length;
-
-    document.getElementById("pendingOrders").innerText = pending;
-
-    document.getElementById("deliveredOrders").innerText = delivered;
-
-    // ✅ Table
-
-    const table = document.getElementById("shipmentTable");
-
-    table.innerHTML = "";
-
-    shipments.slice(0, 8).forEach((s) => {
-
-      table.innerHTML += `
-
-            <tr>
-
-              <td>${s.waybill || "Not Assigned"}</td>
-
-              <td>${s.pickupCity || "N/A"}</td>
-
-              <td>${s.deliveryCity || "N/A"}</td>
-
-              <td>
-
-                <span class="status ${s.status === "Delivered" ? "delivered" : "pending"}">
-
-                  ${s.status || "Pending"}
-
-                </span>
-
-              </td>
-
-            </tr>
-
-          `;
-
-    });
-
+        shipments.slice(0, 8).forEach((s) => {
+          table.innerHTML += `
+        <tr>
+          <td>${s.waybill || "Not Assigned"}</td>
+          <td>${s.pickupCity || "N/A"}</td>
+          <td>${s.deliveryCity || "N/A"}</td>
+          <td>
+            <span class="status ${s.status === "Delivered" ? "delivered" : "pending"
+            }">
+              ${s.status || "Pending"}
+            </span>
+          </td>
+        </tr>
+      `;
+        });
       } catch (err) {
-
-      alert("Server Error ❌ Dashboard not reachable");
-
+        console.error("Dashboard Error:", err);
+        alert("Server Error ❌ Dashboard not reachable");
+      }
     }
 
-    }
+    // ✅ Run
+    loadDashboard();
 
     // ✅ Logout
-
     function logout() {
-
       localStorage.removeItem("adminToken");
-
       window.location.href = "login.html";
-
     }
-
-    // Run
-
-    loadDashboard();
 
   </script>
 
