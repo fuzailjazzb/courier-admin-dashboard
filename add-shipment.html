@@ -1,212 +1,583 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
-  <title>Add Shipment</title>
+
+  <title>Add Shipment - NXTShip Admin</title>
 
   <style>
+
     body {
+
       margin: 0;
+
       font-family: "Segoe UI", sans-serif;
+
       background: #f5f7fb;
+
       display: flex;
+
     }
 
     /* Sidebar */
+
     .sidebar {
+
       width: 250px;
+
       height: 100vh;
+
       background: linear-gradient(to bottom, #0f172a, #1e293b);
+
       color: white;
+
       padding: 25px;
+
       position: fixed;
+
       top: 0;
+
       left: 0;
+
     }
 
     .sidebar h2 {
+
       font-size: 22px;
+
       margin-bottom: 40px;
+
       font-weight: bold;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+
     }
 
     .menu a {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+
+      display: block;
+
       padding: 12px;
+
       margin-bottom: 10px;
+
       border-radius: 10px;
+
       color: white;
+
       text-decoration: none;
+
       font-size: 16px;
+
       transition: 0.3s;
+
     }
 
     .menu a:hover,
+
     .menu a.active {
+
       background: rgba(255, 255, 255, 0.15);
+
     }
 
     /* Main Content */
+
     .main {
-      margin-left: 300px;
+
+      margin-left: 280px;
+
       padding: 30px;
+
       width: 100%;
+
     }
 
-    .form-box {
+    h1 {
+
+      font-size: 26px;
+
+      margin-bottom: 20px;
+
+    }
+
+    /* Shipment Box */
+
+    .shipment-box {
+
       background: white;
+
       padding: 25px;
-      border-radius: 15px;
-      width: 500px;
-      box-shadow: 0 5px 12px rgba(0,0,0,0.08);
+
+      border-radius: 18px;
+
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+
+      max-width: 1100px;
+
+    }
+
+    .grid {
+
+      display: grid;
+
+      grid-template-columns: 1fr 1fr;
+
+      gap: 25px;
+
+    }
+
+    .section-title {
+
+      font-size: 18px;
+
+      font-weight: bold;
+
+      margin-bottom: 12px;
+
+      color: #1e293b;
+
+      border-left: 4px solid #2563eb;
+
+      padding-left: 10px;
+
     }
 
     input, select {
-      width: 95%;
+
+      width: 100%;
+
       padding: 12px;
-      margin: 10px 0;
+
+      margin: 8px 0;
+
       border-radius: 10px;
+
       border: 1px solid #ddd;
+
       font-size: 14px;
+
+      outline: none;
+
+    }
+
+    input:focus, select:focus {
+
+      border-color: #2563eb;
+
+      box-shadow: 0 0 4px rgba(37,99,235,0.4);
+
     }
 
     button {
+
       width: 100%;
-      padding: 12px;
+
+      padding: 14px;
+
       background: #2563eb;
+
       color: white;
+
       border: none;
-      border-radius: 10px;
+
+      border-radius: 12px;
+
       cursor: pointer;
-      font-size: 15px;
+
+      font-size: 16px;
+
+      margin-top: 20px;
+
+      font-weight: bold;
+
     }
 
     button:hover {
+
       background: #1d4ed8;
+
     }
 
     #msg {
-      margin-top: 15px;
+
+      margin-top: 18px;
+
       font-weight: bold;
+
+      text-align: center;
+
     }
+
+    /* Popup */
+
+    .popup {
+
+      display: none;
+
+      position: fixed;
+
+      top: 0;
+
+      left: 0;
+
+      height: 100vh;
+
+      width: 100%;
+
+      background: rgba(0,0,0,0.6);
+
+      justify-content: center;
+
+      align-items: center;
+
+    }
+
+    .popup-box {
+
+      background: white;
+
+      padding: 30px;
+
+      border-radius: 18px;
+
+      width: 400px;
+
+      text-align: center;
+
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+
+    }
+
+    .popup-box h2 {
+
+      margin-bottom: 10px;
+
+      color: green;
+
+    }
+
+    .popup-box button {
+
+      margin-top: 15px;
+
+      width: auto;
+
+      padding: 10px 20px;
+
+    }
+
+    @media(max-width: 900px) {
+
+      .grid {
+
+        grid-template-columns: 1fr;
+
+      }
+
+    }
+
   </style>
+
 </head>
 
 <body>
 
   <!-- Sidebar -->
+
   <div class="sidebar">
+
     <h2>🚚 Courier Admin</h2>
 
     <div class="menu">
+
       <a href="dashboard.html">📊 Dashboard</a>
+
       <a href="add-shipment.html" class="active">📑 Add Shipment</a>
+
       <a href="shipments.html">📦 View Shipments</a>
+
       <a href="customers.html">👤 Customers</a>
+
       <a href="#" onclick="logout()">🚪 Logout</a>
+
     </div>
+
   </div>
 
   <!-- Main -->
+
   <div class="main">
-    <h1>➕ Create New Shipment</h1>
 
-    <div class="form-box">
+    <h1>➕ Create New Shipment (Production)</h1>
 
-      <input id="customerName" placeholder="Customer Name">
-      <input id="phone" placeholder="Phone Number">
+    <div class="shipment-box">
 
-      <input id="address" placeholder="Delivery Address">
-      <input id="pincode" placeholder="Pincode">
-      <input id="city" placeholder="City">
-      <input id="state" placeholder="State">
+      <div class="grid">
 
-      <input id="orderId" placeholder="Order ID">
+        <!-- Pickup Details -->
 
-      <select id="paymentMode">
-        <option value="Prepaid">Prepaid</option>
-        <option value="COD">Cash On Delivery</option>
-      </select>
+        <div>
 
-      <button onclick="createShipment()">🚀 Create Shipment</button>
+          <div class="section-title">📍 Pickup Details</div>
+
+          <input id="pickupName" placeholder="Pickup Contact Name" value="NXTShip Warehouse">
+
+          <input id="pickupPhone" placeholder="Pickup Phone" value="9999999999">
+
+          <input id="pickupAddress" placeholder="Pickup Address" value="Patna Hub">
+
+          <input id="pickupCity" placeholder="Pickup City" value="Patna">
+
+          <input id="pickupState" placeholder="Pickup State" value="Bihar">
+
+          <input id="pickupPincode" placeholder="Pickup Pincode" value="800006">
+
+          <input id="sellerName" placeholder="Seller Name" value="NXTShip Pvt Ltd">
+
+          <input id="sellerGST" placeholder="Seller GST Number (optional)">
+
+        </div>
+
+        <!-- Delivery Details -->
+
+        <div>
+
+          <div class="section-title">📦 Delivery Details</div>
+
+          <input id="customerName" placeholder="Customer Name">
+
+          <input id="phone" placeholder="Customer Phone Number">
+
+          <input id="address" placeholder="Delivery Address">
+
+          <input id="city" placeholder="City">
+
+          <input id="state" placeholder="State">
+
+          <input id="pincode" placeholder="Pincode">
+
+          <input id="orderId" placeholder="Order ID / Reference">
+
+          <select id="paymentMode">
+
+            <option value="Prepaid">Prepaid</option>
+
+            <option value="COD">Cash On Delivery</option>
+
+          </select>
+
+          <input id="productName" placeholder="Product Description">
+
+          <input id="quantity" placeholder="Quantity" value="1">
+
+          <input id="orderValue" placeholder="Order Value ₹">
+
+          <input id="weight" placeholder="Weight (kg)">
+
+        </div>
+
+      </div>
+
+      <!-- Submit -->
+
+      <button onclick="createShipment()">🚀 Book Shipment with DeliveryOne</button>
 
       <p id="msg"></p>
 
     </div>
+
+  </div>
+
+  <!-- Success Popup -->
+
+  <div class="popup" id="popup">
+
+    <div class="popup-box">
+
+      <h2>Shipment Booked ✅</h2>
+
+      <p id="popupText"></p>
+
+      <button onclick="closePopup()">OK</button>
+
+    </div>
+
   </div>
 
   <script>
+
     const API_URL = "https://nxtship-backend.onrender.com/api/shipment/book";
 
     async function createShipment() {
+
       const token = localStorage.getItem("adminToken");
 
       if (!token) {
+
         alert("Session expired! Please login again.");
+
         window.location.href = "login.html";
+
         return;
+
       }
 
-      document.getElementById("msg").style.color = "black";
-      document.getElementById("msg").innerText = "Booking shipment... ⏳";
+      // Basic Validation
+
+      if (!customerName.value || !phone.value || !address.value) {
+
+        msg.style.color = "red";
+
+        msg.innerText = "❌ Please fill all required fields!";
+
+        return;
+
+      }
+
+      msg.style.color = "black";
+
+      msg.innerText = "Booking shipment... ⏳";
 
       const shipmentData = {
-        customerName: document.getElementById("customerName").value,
-        phone: document.getElementById("phone").value,
-        address: document.getElementById("address").value,
-        pincode: document.getElementById("pincode").value,
-        city: document.getElementById("city").value,
-        state: document.getElementById("state").value,
-        orderId: document.getElementById("orderId").value,
-        paymentMode: document.getElementById("paymentMode").value,
+
+        orderId: orderId.value,
+
+        paymentMode: paymentMode.value,
+
+        pickup: {
+
+          name: pickupName.value,
+
+          phone: pickupPhone.value,
+
+          address: pickupAddress.value,
+
+          city: pickupCity.value,
+
+          state: pickupState.value,
+
+          pincode: pickupPincode.value,
+
+        },
+
+        delivery: {
+
+          customerName: customerName.value,
+
+          phone: phone.value,
+
+          address: address.value,
+
+          city: city.value,
+
+          state: state.value,
+
+          pincode: pincode.value,
+
+        },
+
+        product: {
+
+          productName: productName.value,
+
+          quantity: quantity.value,
+
+          orderValue: orderValue.value,
+
+          weight: weight.value,
+
+        },
+
+        seller: {
+
+          sellerName: sellerName.value,
+
+          gst: sellerGST.value,
+
+        }
+
       };
 
       try {
+
         const res = await fetch(API_URL, {
+
           method: "POST",
+
           headers: {
+
             "Content-Type": "application/json",
+
             Authorization: "Bearer " + token
+
           },
+
           body: JSON.stringify(shipmentData)
+
         });
 
         const data = await res.json();
 
         if (data.success) {
-          document.getElementById("msg").style.color = "green";
+
+          msg.style.color = "green";
+
+          msg.innerText = "Shipment Booked Successfully ✅";
 
           let waybill =
+
             data.delhiveryResponse?.packages?.[0]?.waybill ||
+
             data.shipment?.waybill ||
+
             "Not Assigned";
 
-          document.getElementById("msg").innerText =
-            "Shipment Created Successfully ✅ Waybill: " + waybill;
+          popup.style.display = "flex";
+
+          popupText.innerText =
+
+            "Waybill Number: " + waybill +
+
+            "\nOrder ID: " + shipmentData.orderId;
 
         } else {
-          document.getElementById("msg").style.color = "red";
-          document.getElementById("msg").innerText =
-            data.message || "Shipment booking failed ❌";
+
+          msg.style.color = "red";
+
+          msg.innerText = data.message || "Booking Failed ❌";
+
         }
 
       } catch (err) {
-        document.getElementById("msg").style.color = "red";
-        document.getElementById("msg").innerText =
-          "Server Error ❌ Backend not reachable";
+
+        msg.style.color = "red";
+
+        msg.innerText = "Server Error ❌ Backend not reachable";
+
       }
+
+    }
+
+    function closePopup() {
+
+      popup.style.display = "none";
+
+      window.location.reload();
+
     }
 
     function logout() {
+
       localStorage.removeItem("adminToken");
+
       window.location.href = "login.html";
+
     }
+
   </script>
 
 </body>
+
 </html>
