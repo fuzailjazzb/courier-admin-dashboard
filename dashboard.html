@@ -505,6 +505,8 @@
         },
       );
 
+      localStorage.setItem("adminToken", data.token);
+
     const data = await res.json();
 
     if (!data.success) {
