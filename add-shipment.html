@@ -407,177 +407,117 @@
   </div>
 
   <script>
+  const API_URL = "https://nxtship-backend.onrender.com/api/shipment/book";
 
-    const API_URL = "https://nxtship-backend.onrender.com/api/shipment/book";
+  // ✅ Auto Generate Unique Order ID Every Time
+  window.onload = () => {
+    orderId.value = "ORD" + Date.now();
+  };
 
-    async function createShipment() {
+  async function createShipment() {
+    const token = localStorage.getItem("adminToken");
 
-      const token = localStorage.getItem("adminToken");
-
-      if (!token) {
-
-        alert("Session expired! Please login again.");
-
-        window.location.href = "login.html";
-
-        return;
-
-      }
-
-      // Basic Validation
-
-      if (!customerName.value || !phone.value || !address.value) {
-
-        msg.style.color = "red";
-
-        msg.innerText = "❌ Please fill all required fields!";
-
-        return;
-
-      }
-
-      msg.style.color = "black";
-
-      msg.innerText = "Booking shipment... ⏳";
-
-      const shipmentData = {
-
-        orderId: orderId.value,
-
-        paymentMode: paymentMode.value,
-
-        pickup: {
-
-          name: pickupName.value,
-
-          phone: pickupPhone.value,
-
-          address: pickupAddress.value,
-
-          city: pickupCity.value,
-
-          state: pickupState.value,
-
-          pincode: pickupPincode.value,
-
-        },
-
-        delivery: {
-
-          customerName: customerName.value,
-
-          phone: phone.value,
-
-          address: address.value,
-
-          city: city.value,
-
-          state: state.value,
-
-          pincode: pincode.value,
-
-        },
-
-        product: {
-
-          productName: productName.value,
-
-          quantity: quantity.value,
-
-          orderValue: orderValue.value,
-
-          weight: weight.value,
-
-        },
-
-        seller: {
-
-          sellerName: sellerName.value,
-
-          gst: sellerGST.value,
-
-        }
-
-      };
-
-      try {
-
-        const res = await fetch(API_URL, {
-
-          method: "POST",
-
-          headers: {
-
-            "Content-Type": "application/json",
-
-            Authorization: "Bearer " + token
-
-          },
-
-          body: JSON.stringify(shipmentData)
-
-        });
-
-        const data = await res.json();
-
-        if (data.success) {
-
-          msg.style.color = "green";
-
-          msg.innerText = "Shipment Booked Successfully ✅";
-
-          let waybill =
-
-            data.delhiveryResponse?.packages?.[0]?.waybill ||
-
-            data.shipment?.waybill ||
-
-            "Not Assigned";
-
-          popup.style.display = "flex";
-
-          popupText.innerText =
-
-            "Waybill Number: " + waybill +
-
-            "\nOrder ID: " + shipmentData.orderId;
-
-        } else {
-
-          msg.style.color = "red";
-
-          msg.innerText = data.message || "Booking Failed ❌";
-
-        }
-
-      } catch (err) {
-
-        msg.style.color = "red";
-
-        msg.innerText = "Server Error ❌ Backend not reachable";
-
-      }
-
-    }
-
-    function closePopup() {
-
-      popup.style.display = "none";
-
-      window.location.reload();
-
-    }
-
-    function logout() {
-
-      localStorage.removeItem("adminToken");
-
+    if (!token) {
+      alert("Session expired! Please login again.");
       window.location.href = "login.html";
-
+      return;
     }
 
-  </script>
+    // ✅ Basic Validation
+    if (!customerName.value || !phone.value || !address.value) {
+      msg.style.color = "red";
+      msg.innerText = "❌ Please fill all required fields!";
+      return;
+    }
 
+    msg.style.color = "black";
+    msg.innerText = "Booking shipment... ⏳";
+
+    // ✅ Correct Shipment Payload (Pickup + Delivery Split)
+    const shipmentData = {
+      orderId: orderId.value,
+      paymentMode: paymentMode.value,
+
+      pickup: {
+        name: pickupName.value,
+        phone: pickupPhone.value,
+        address: pickupAddress.value,
+        city: pickupCity.value,
+        state: pickupState.value,
+        pincode: pickupPincode.value,
+      },
+
+      delivery: {
+        customerName: customerName.value,
+        phone: phone.value,
+        address: address.value,
+        city: city.value,
+        state: state.value,
+        pincode: pincode.value,
+      },
+
+      product: {
+        productName: productName.value,
+        quantity: quantity.value || 1,
+        orderValue: orderValue.value || 0,
+        weight: weight.value || 0.5,
+      },
+
+      seller: {
+        sellerName: sellerName.value,
+        gst: sellerGST.value,
+      },
+    };
+
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+        body: JSON.stringify(shipmentData),
+      });
+
+      const data = await res.json();
+
+      // ❌ If Backend Error
+      if (!data.success) {
+        msg.style.color = "red";
+        msg.innerText = data.message || "Booking Failed ❌";
+        return;
+      }
+
+      // ✅ SUCCESS CASE
+      msg.style.color = "green";
+      msg.innerText = "Shipment Booked Successfully ✅";
+
+      // ✅ FIXED Waybill Extract (Direct from Backend)
+      let waybill = data.waybill || "Not Assigned";
+
+      // ✅ Show Popup
+      popup.style.display = "flex";
+      popupText.innerText =
+        "Waybill Number: " + waybill +
+        "\nOrder ID: " + shipmentData.orderId;
+
+    } catch (err) {
+      msg.style.color = "red";
+      msg.innerText = "Server Error ❌ Backend not reachable";
+      console.log("Frontend Error:", err);
+    }
+  }
+
+  function closePopup() {
+    popup.style.display = "none";
+    window.location.reload();
+  }
+
+  function logout() {
+    localStorage.removeItem("adminToken");
+    window.location.href = "login.html";
+  }
+</script>
 </body>
 
 </html>
