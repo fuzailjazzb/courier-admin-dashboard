@@ -185,7 +185,7 @@
           document.getElementById("msg").innerText =
             "Shipment Booked Successfully ✅";
 
-          alert("Waybill: " + data.shipment?.delhiveryResponse?.packages?.[0]?.waybill);
+          alert("Waybill: " + data.delhiveryResponse?.packages?.[0]?.waybill);
 
         } else {
           document.getElementById("msg").style.color = "red";
