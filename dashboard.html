@@ -496,14 +496,12 @@
 
         const token = localStorage.getItem("adminToken");
 
-        const res = await fetch(`https://nxtship-backend.onrender.com/api/shipment/all`, {
-
+        const res = await fetch(`${BACKEND_URL}/api/shipment/all`, {
+          method: "GET",
           headers: {
+            Authorization: "Bearer " + token,
 
-            Authorization: `Bearer ${ token }`
-
-          }
-
+          },
         },
       );
 
