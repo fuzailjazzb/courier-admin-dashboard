@@ -1,176 +1,684 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
+
   <title>Shipments</title>
 
+
+
+
   <style>
+
     body {
+
       margin: 0;
+
       font-family: "Segoe UI", sans-serif;
+
       background: #f5f7fb;
+
       display: flex;
+
     }
+
+
+
 
     /* Sidebar */
+
     .sidebar {
+
       width: 250px;
+
       height: 100vh;
+
       background: linear-gradient(to bottom, #0f172a, #1e293b);
+
       color: white;
+
       padding: 25px;
+
       position: fixed;
+
       top: 0;
+
       left: 0;
+
     }
+
+
+
 
     .sidebar h2 {
+
       font-size: 22px;
+
       margin-bottom: 40px;
+
       font-weight: bold;
+
       display: flex;
+
       align-items: center;
+
       gap: 8px;
+
     }
+
+
+
 
     .menu a {
+
       display: flex;
+
       align-items: center;
+
       gap: 10px;
+
       padding: 12px;
+
       margin-bottom: 10px;
+
       border-radius: 10px;
+
       color: white;
+
       text-decoration: none;
+
       font-size: 16px;
+
       transition: 0.3s;
+
     }
+
+
+
 
     .menu a:hover,
+
     .menu a.active {
+
       background: rgba(255, 255, 255, 0.15);
+
     }
+
+
+
 
     .main {
+
       margin-left: 300px;
+
       padding: 25px;
+
       width: 100%;
+
     }
+
+
+
 
     h1 {
+
       margin-bottom: 20px;
+
     }
+
+
+
 
     table {
+
       width: 100%;
+
       background: white;
+
       border-radius: 15px;
+
       border-collapse: collapse;
+
       overflow: hidden;
+
       box-shadow: 0 5px 12px rgba(0,0,0,0.08);
+
     }
+
+
+
 
     th {
+
       background: #2563eb;
+
       color: white;
+
       padding: 12px;
+
+      font-size: 15px;
+
     }
+
+
+
 
     td {
+
       padding: 12px;
+
       border-bottom: 1px solid #ddd;
+
+      font-size: 15px;
+
     }
+
+
+
 
     tr:hover {
+
       background: #f9fafb;
+
     }
+
+
+
 
     .status {
+
       padding: 6px 12px;
+
       border-radius: 10px;
+
       font-size: 13px;
+
       font-weight: bold;
+
+      display: inline-block;
+
     }
+
+
+
 
     .pending {
+
       background: #fde68a;
+
       color: #92400e;
+
     }
 
+
+
+
     .delivered {
+
       background: #bbf7d0;
+
       color: #166534;
+
     }
+
+
+
+
+    .btn {
+
+      padding: 6px 10px;
+
+      border: none;
+
+      border-radius: 8px;
+
+      cursor: pointer;
+
+      font-size: 13px;
+
+      margin-right: 6px;
+
+    }
+
+
+
+
+    .track-btn {
+
+      background: #2563eb;
+
+      color: white;
+
+    }
+
+
+
+
+    .cancel-btn {
+
+      background: #ef4444;
+
+      color: white;
+
+    }
+
+
+
+
+    .details-btn {
+
+      background: #0f172a;
+
+      color: white;
+
+    }
+
+
+
+
+    /* Modal Popup */
+
+    .modal {
+
+      display: none;
+
+      position: fixed;
+
+      top: 0;
+
+      left: 0;
+
+      width: 100%;
+
+      height: 100%;
+
+      background: rgba(0,0,0,0.6);
+
+      justify-content: center;
+
+      align-items: center;
+
+    }
+
+
+
+
+    .modal-content {
+
+      background: white;
+
+      width: 450px;
+
+      padding: 25px;
+
+      border-radius: 15px;
+
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+
+      animation: fadeIn 0.3s ease;
+
+    }
+
+
+
+
+    @keyframes fadeIn {
+
+      from { transform: scale(0.9); opacity: 0; }
+
+      to { transform: scale(1); opacity: 1; }
+
+    }
+
+
+
+
+    .close {
+
+      float: right;
+
+      font-size: 20px;
+
+      cursor: pointer;
+
+      color: red;
+
+    }
+
+
+
+
+    .loading {
+
+      text-align: center;
+
+      font-weight: bold;
+
+      padding: 20px;
+
+      color: gray;
+
+    }
+
   </style>
+
 </head>
+
+
+
 
 <body>
 
+
+
+
  <!-- Sidebar -->
+
   <div class="sidebar">
+
     <h2>🚚 Courier Admin</h2>
 
+
+
+
     <div class="menu">
+
       <a href="dashboard.html">📊 Dashboard</a>
+
       <a href="add-shipment.html">📑 Add Shipment</a>
+
       <a href="shipments.html" class="active">📦 View Shipments</a>
+
       <a href="customers.html">👤 Customers</a>
+
       <a href="#" onclick="logout()">🚪 Logout</a>
+
     </div>
+
   </div>
+
+
 
 
   <div class="main">
+
     <h1>📦 All Shipments</h1>
 
+
+
+
     <table>
+
       <thead>
+
         <tr>
+
+          <th>Waybill</th>
+
           <th>Pickup</th>
+
           <th>Delivery</th>
+
           <th>Status</th>
+
+          <th>Actions</th>
+
         </tr>
+
       </thead>
 
-      <tbody id="shipmentList"></tbody>
+
+
+
+      <tbody id="shipmentList">
+
+        <tr>
+
+          <td colspan="5" class="loading">Loading Shipments...</td>
+
+        </tr>
+
+      </tbody>
+
     </table>
+
   </div>
 
-  <script>
-    let shipments = [
-      { pickup: "Patna", delivery: "Delhi", status: "Pending" },
-      { pickup: "Mumbai", delivery: "Bangalore", status: "Delivered" },
-      { pickup: "Kolkata", delivery: "Jaipur", status: "Pending" }
-    ];
 
-    function loadShipments() {
+
+
+  <!-- Modal -->
+
+  <div class="modal" id="detailsModal">
+
+    <div class="modal-content">
+
+      <span class="close" onclick="closeModal()">✖</span>
+
+      <h2>📦 Shipment Details</h2>
+
+      <p id="modalData"></p>
+
+    </div>
+
+  </div>
+
+
+
+
+  <script>
+
+    const BACKEND_URL = "https://nxtship-backend.onrender.com";
+
+
+
+
+    // Protect Page
+
+    if (!localStorage.getItem("adminToken")) {
+
+      alert("Please login first!");
+
+      window.location.href = "login.html";
+
+    }
+
+
+
+
+    // Fetch Shipments
+
+    async function loadShipments() {
+
+      const token = localStorage.getItem("adminToken");
+
+
+
+
+      const res = await fetch(`${BACKEND_URL}/api/shipment/all`, {
+
+        headers: { Authorization: `Bearer ${token}` }
+
+      });
+
+
+
+
+      const data = await res.json();
+
+
+
+
       let list = document.getElementById("shipmentList");
+
       list.innerHTML = "";
 
-      shipments.forEach(s => {
-        list.innerHTML += `
-          <tr>
-            <td>${s.pickup}</td>
-            <td>${s.delivery}</td>
-            <td>
-              <span class="status ${s.status === "Pending" ? "pending" : "delivered"}">
-                ${s.status}
-              </span>
-            </td>
-          </tr>
+
+
+
+      if (data.shipments.length === 0) {
+
+        list.innerHTML = `
+
+          <tr><td colspan="5" class="loading">No Shipments Found 📭</td></tr>
+
         `;
+
+        return;
+
+      }
+
+
+
+
+      data.shipments.forEach(s => {
+
+        list.innerHTML += `
+
+          <tr>
+
+            <td>${s.waybill || "Not Assigned"}</td>
+
+            <td>${s.pickupCity || "N/A"}</td>
+
+            <td>${s.deliveryCity || "N/A"}</td>
+
+            <td>
+
+              <span class="status ${s.status === "Delivered" ? "delivered" : "pending"}">
+
+                ${s.status || "Pending"}
+
+              </span>
+
+            </td>
+
+            <td>
+
+              <button class="btn track-btn" onclick="trackShipment('${s.waybill}')">Track</button>
+
+              <button class="btn cancel-btn" onclick="cancelShipment('${s._id}')">Cancel</button>
+
+              <button class="btn details-btn" onclick="viewDetails('${s._id}')">Details</button>
+
+            </td>
+
+          </tr>
+
+        `;
+
       });
+
     }
+
+
+
+
+    // Track Shipment
+
+    function trackShipment(waybill) {
+
+      if (!waybill) return alert("Waybill not assigned yet!");
+
+      window.open(`${BACKEND_URL}/api/shipment/track/${waybill}`, "_blank");
+
+    }
+
+
+
+
+    // Cancel Shipment
+
+    async function cancelShipment(id) {
+
+      if (!confirm("Cancel this shipment?")) return;
+
+
+
+
+      const token = localStorage.getItem("adminToken");
+
+
+
+
+      await fetch(`${BACKEND_URL}/api/shipment/cancel/${id}`, {
+
+        method: "DELETE",
+
+        headers: { Authorization: `Bearer ${token}` }
+
+      });
+
+
+
+
+      alert("Shipment Cancelled ❌");
+
+      loadShipments();
+
+    }
+
+
+
+
+    // View Details Popup
+
+    function viewDetails(id) {
+
+      document.getElementById("detailsModal").style.display = "flex";
+
+      document.getElementById("modalData").innerHTML =
+
+        "Loading shipment details...";
+
+
+
+
+      document.getElementById("modalData").innerHTML = `
+
+        <b>Shipment ID:</b> ${id}<br>
+
+        Full shipment info will come from backend API soon.
+
+      `;
+
+    }
+
+
+
+
+    function closeModal() {
+
+      document.getElementById("detailsModal").style.display = "none";
+
+    }
+
+
+
+
+    // Logout
+
+    function logout() {
+
+      localStorage.removeItem("adminToken");
+
+      window.location.href = "login.html";
+
+    }
+
+
+
 
     loadShipments();
 
-     
-    function logout() {
-      localStorage.removeItem("adminToken");
-      window.location.href = "login.html";
-    }
-
   </script>
 
+
+
+
 </body>
+
 </html>
