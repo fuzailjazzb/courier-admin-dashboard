@@ -129,7 +129,7 @@
       <input id="state" placeholder="State">
       <input id="pincode" placeholder="Pincode">
 
-      <input id="orderId" placeholder="Order ID" readonly>
+      <input id="orderId" placeholder="Order ID Auto" readonly>
 
       <select id="paymentMode">
         <option value="Prepaid">Prepaid</option>
@@ -148,6 +148,15 @@
 
   <script>
     const API_URL = "https://nxtship-backend.onrender.com/api/shipment/book";
+
+    function generateOrderId() {
+      let randomNum = Math.floor(100000 + Math.random() * 900000);
+      return "ORD" + randomNum;
+    }
+
+    window.onload = function() {
+      document.getElementById("orderId").value = generateOrderId();
+    };
 
     async function createShipment() {
 
