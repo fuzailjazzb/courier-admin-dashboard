@@ -1,684 +1,396 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
-  <meta charset="UTF-8">
-
-  <title>Shipments</title>
-
-
-
+  <meta charset="UTF-8" />
+  <title>Shipments - NXTShip Admin</title>
 
   <style>
-
     body {
-
+      font-family: Segoe UI, sans-serif;
       margin: 0;
-
-      font-family: "Segoe UI", sans-serif;
-
       background: #f5f7fb;
-
       display: flex;
-
     }
-
-
-
 
     /* Sidebar */
-
     .sidebar {
-
       width: 250px;
-
       height: 100vh;
-
       background: linear-gradient(to bottom, #0f172a, #1e293b);
-
       color: white;
-
       padding: 25px;
-
       position: fixed;
-
-      top: 0;
-
-      left: 0;
-
     }
 
-
-
-
-    .sidebar h2 {
-
-      font-size: 22px;
-
-      margin-bottom: 40px;
-
-      font-weight: bold;
-
-      display: flex;
-
-      align-items: center;
-
-      gap: 8px;
-
-    }
-
-
-
-
-    .menu a {
-
-      display: flex;
-
-      align-items: center;
-
-      gap: 10px;
-
+    .sidebar a {
+      display: block;
       padding: 12px;
-
       margin-bottom: 10px;
-
       border-radius: 10px;
-
-      color: white;
-
       text-decoration: none;
-
-      font-size: 16px;
-
-      transition: 0.3s;
-
+      color: white;
     }
 
-
-
-
-    .menu a:hover,
-
-    .menu a.active {
-
+    .sidebar a:hover,
+    .sidebar a.active {
       background: rgba(255, 255, 255, 0.15);
-
     }
 
-
-
-
+    /* Main */
     .main {
-
-      margin-left: 300px;
-
-      padding: 25px;
-
+      margin-left: 280px;
+      padding: 30px;
       width: 100%;
-
     }
-
-
-
 
     h1 {
+      font-size: 26px;
+      margin-bottom: 15px;
+    }
 
+    /* Controls */
+    .controls {
+      display: flex;
+      gap: 15px;
       margin-bottom: 20px;
-
     }
 
+    input, select {
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      font-size: 14px;
+      outline: none;
+      width: 250px;
+    }
 
-
-
+    /* Table */
     table {
-
       width: 100%;
-
-      background: white;
-
-      border-radius: 15px;
-
       border-collapse: collapse;
-
+      background: white;
+      border-radius: 15px;
       overflow: hidden;
-
-      box-shadow: 0 5px 12px rgba(0,0,0,0.08);
-
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
     }
 
-
-
+    th, td {
+      padding: 14px;
+      border-bottom: 1px solid #eee;
+      text-align: center;
+    }
 
     th {
-
       background: #2563eb;
-
       color: white;
-
-      padding: 12px;
-
-      font-size: 15px;
-
     }
 
-
-
-
-    td {
-
-      padding: 12px;
-
-      border-bottom: 1px solid #ddd;
-
-      font-size: 15px;
-
-    }
-
-
-
-
-    tr:hover {
-
-      background: #f9fafb;
-
-    }
-
-
-
-
-    .status {
-
+    /* Status Badges */
+    .badge {
       padding: 6px 12px;
-
-      border-radius: 10px;
-
+      border-radius: 12px;
       font-size: 13px;
-
       font-weight: bold;
-
+      color: white;
       display: inline-block;
-
     }
 
+    .pending { background: orange; }
+    .booked { background: #2563eb; }
+    .delivered { background: green; }
+    .cancelled { background: red; }
 
-
-
-    .pending {
-
-      background: #fde68a;
-
-      color: #92400e;
-
-    }
-
-
-
-
-    .delivered {
-
-      background: #bbf7d0;
-
-      color: #166534;
-
-    }
-
-
-
-
+    /* Buttons */
     .btn {
-
-      padding: 6px 10px;
-
+      padding: 8px 12px;
       border: none;
-
       border-radius: 8px;
-
       cursor: pointer;
-
-      font-size: 13px;
-
-      margin-right: 6px;
-
-    }
-
-
-
-
-    .track-btn {
-
-      background: #2563eb;
-
-      color: white;
-
-    }
-
-
-
-
-    .cancel-btn {
-
-      background: #ef4444;
-
-      color: white;
-
-    }
-
-
-
-
-    .details-btn {
-
-      background: #0f172a;
-
-      color: white;
-
-    }
-
-
-
-
-    /* Modal Popup */
-
-    .modal {
-
-      display: none;
-
-      position: fixed;
-
-      top: 0;
-
-      left: 0;
-
-      width: 100%;
-
-      height: 100%;
-
-      background: rgba(0,0,0,0.6);
-
-      justify-content: center;
-
-      align-items: center;
-
-    }
-
-
-
-
-    .modal-content {
-
-      background: white;
-
-      width: 450px;
-
-      padding: 25px;
-
-      border-radius: 15px;
-
-      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-
-      animation: fadeIn 0.3s ease;
-
-    }
-
-
-
-
-    @keyframes fadeIn {
-
-      from { transform: scale(0.9); opacity: 0; }
-
-      to { transform: scale(1); opacity: 1; }
-
-    }
-
-
-
-
-    .close {
-
-      float: right;
-
-      font-size: 20px;
-
-      cursor: pointer;
-
-      color: red;
-
-    }
-
-
-
-
-    .loading {
-
-      text-align: center;
-
       font-weight: bold;
-
-      padding: 20px;
-
-      color: gray;
-
+      font-size: 13px;
     }
 
+    .track-btn { background: #16a34a; color: white; }
+    .cancel-btn { background: #dc2626; color: white; }
+    .details-btn { background: #111827; color: white; }
+
+    /* Popup */
+    .popup {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .popup-box {
+      background: white;
+      width: 600px;
+      padding: 25px;
+      border-radius: 18px;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    .popup-box h2 {
+      margin-top: 0;
+      color: #2563eb;
+    }
+
+    .timeline {
+      margin-top: 15px;
+      text-align: left;
+    }
+
+    .event {
+      padding: 10px;
+      border-left: 4px solid #2563eb;
+      margin-bottom: 12px;
+      background: #f1f5ff;
+      border-radius: 10px;
+    }
+
+    .close-btn {
+      margin-top: 15px;
+      padding: 10px 18px;
+      background: #111827;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
   </style>
-
 </head>
-
-
-
 
 <body>
 
-
-
-
- <!-- Sidebar -->
-
+  <!-- Sidebar -->
   <div class="sidebar">
-
     <h2>🚚 Courier Admin</h2>
-
-
-
-
-    <div class="menu">
-
-      <a href="dashboard.html">📊 Dashboard</a>
-
-      <a href="add-shipment.html">📑 Add Shipment</a>
-
-      <a href="shipments.html" class="active">📦 View Shipments</a>
-
-      <a href="customers.html">👤 Customers</a>
-
-      <a href="#" onclick="logout()">🚪 Logout</a>
-
-    </div>
-
+    <a href="dashboard.html">📊 Dashboard</a>
+    <a href="add-shipment.html">➕ Add Shipment</a>
+    <a href="shipments.html" class="active">📦 View Shipments</a>
+    <a href="#" onclick="logout()">🚪 Logout</a>
   </div>
 
-
-
-
+  <!-- Main -->
   <div class="main">
-
     <h1>📦 All Shipments</h1>
 
-
-
-
-    <table>
-
-      <thead>
-
-        <tr>
-
-          <th>Waybill</th>
-
-          <th>Pickup</th>
-
-          <th>Delivery</th>
-
-          <th>Status</th>
-
-          <th>Actions</th>
-
-        </tr>
-
-      </thead>
-
-
-
-
-      <tbody id="shipmentList">
-
-        <tr>
-
-          <td colspan="5" class="loading">Loading Shipments...</td>
-
-        </tr>
-
-      </tbody>
-
-    </table>
-
-  </div>
-
-
-
-
-  <!-- Modal -->
-
-  <div class="modal" id="detailsModal">
-
-    <div class="modal-content">
-
-      <span class="close" onclick="closeModal()">✖</span>
-
-      <h2>📦 Shipment Details</h2>
-
-      <p id="modalData"></p>
-
+    <!-- Search + Filter -->
+    <div class="controls">
+      <input id="searchInput" placeholder="Search Waybill / OrderId..." />
+      <select id="statusFilter">
+        <option value="all">All Status</option>
+        <option value="Pending">Pending</option>
+        <option value="Booked">Booked</option>
+        <option value="Delivered">Delivered</option>
+        <option value="Cancelled">Cancelled</option>
+      </select>
     </div>
 
+    <!-- Table -->
+    <table>
+      <thead>
+        <tr>
+          <th>Waybill</th>
+          <th>Order ID</th>
+          <th>Status</th>
+          <th>Details</th>
+          <th>Track</th>
+          <th>Cancel</th>
+        </tr>
+      </thead>
+      <tbody id="shipmentTable"></tbody>
+    </table>
   </div>
 
+  <!-- Popup -->
+  <div class="popup" id="popup">
+    <div class="popup-box">
+      <h2>📍 Shipment Details</h2>
+      <p id="shipmentDetails"></p>
 
+      <h3>Tracking Timeline</h3>
+      <div class="timeline" id="timeline"></div>
 
+      <button class="close-btn" onclick="closePopup()">Close</button>
+    </div>
+  </div>
 
   <script>
-
     const BACKEND_URL = "https://nxtship-backend.onrender.com";
+    const token = localStorage.getItem("adminToken");
 
-
-
-
-    // Protect Page
-
-    if (!localStorage.getItem("adminToken")) {
-
+    if (!token) {
       alert("Please login first!");
-
       window.location.href = "login.html";
-
     }
 
+    let allShipments = [];
 
-
-
-    // Fetch Shipments
-
+    // ✅ Load Shipments
     async function loadShipments() {
-
-      const token = localStorage.getItem("adminToken");
-
-
-
-
       const res = await fetch(`${BACKEND_URL}/api/shipment/all`, {
-
         headers: { Authorization: `Bearer ${token}` }
-
       });
 
+      const data = await res.json();
+      allShipments = data.shipments;
+      renderTable(allShipments);
+    }
 
+    // ✅ Render Table
+    function renderTable(shipments) {
+      const table = document.getElementById("shipmentTable");
+      table.innerHTML = "";
 
+      shipments.forEach((s) => {
+        let badgeClass =
+          s.status === "Delivered" ? "delivered" :
+          s.status === "Cancelled" ? "cancelled" :
+          s.status === "Booked" ? "booked" :
+          "pending";
+
+        table.innerHTML += `
+          <tr>
+            <td>${s.waybill || "Not Assigned"}</td>
+            <td>${s.orderId}</td>
+
+            <td>
+              <span class="badge ${badgeClass}">
+                ${s.status}
+              </span>
+            </td>
+
+            <td>
+              <button class="btn details-btn"
+                onclick='showDetails(${JSON.stringify(s)})'>
+                View
+              </button>
+            </td>
+
+            <td>
+              <button class="btn track-btn"
+                onclick="trackShipment('${s.waybill}')">
+                Track
+              </button>
+            </td>
+
+            <td>
+              <button class="btn cancel-btn"
+                onclick="cancelShipment('${s._id}')">
+                Cancel
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    // ✅ Shipment Details Popup
+    function showDetails(shipment) {
+      document.getElementById("popup").style.display = "flex";
+
+      document.getElementById("shipmentDetails").innerHTML = `
+        <b>Waybill:</b> ${shipment.waybill}<br/>
+        <b>Order ID:</b> ${shipment.orderId}<br/>
+        <b>Customer:</b> ${shipment.customerName}<br/>
+        <b>City:</b> ${shipment.city}<br/>
+        <b>Status:</b> ${shipment.status}<br/>
+      `;
+    }
+
+    // ✅ Track Shipment Timeline
+    async function trackShipment(waybill) {
+      if (!waybill) {
+        alert("Waybill not assigned yet!");
+        return;
+      }
+
+      document.getElementById("popup").style.display = "flex";
+
+      const res = await fetch(`${BACKEND_URL}/api/shipment/track/${waybill}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const data = await res.json();
+      const timeline = document.getElementById("timeline");
+
+      timeline.innerHTML = "";
+
+      const scans =
+        data.tracking?.ShipmentData?.[0]?.Shipment?.Scans || [];
+
+      if (scans.length === 0) {
+        timeline.innerHTML = "<p>No updates yet.</p>";
+        return;
+      }
+
+      scans.forEach((scan) => {
+        timeline.innerHTML += `
+          <div class="event">
+            <b>${scan.ScanDetail?.Scan}</b><br/>
+            📍 ${scan.ScanDetail?.ScannedLocation}<br/>
+            🕒 ${scan.ScanDetail?.ScanDateTime}
+          </div>
+        `;
+      });
+    }
+
+    // ✅ Cancel Shipment (Backend + Delhivery API Ready)
+    async function cancelShipment(id) {
+      if (!confirm("Cancel this shipment?")) return;
+
+      const res = await fetch(`${BACKEND_URL}/api/shipment/cancel/${id}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
       const data = await res.json();
 
-
-
-
-      let list = document.getElementById("shipmentList");
-
-      list.innerHTML = "";
-
-
-
-
-      if (data.shipments.length === 0) {
-
-        list.innerHTML = `
-
-          <tr><td colspan="5" class="loading">No Shipments Found 📭</td></tr>
-
-        `;
-
-        return;
-
+      if (data.success) {
+        alert("Shipment Cancelled ✅");
+        loadShipments();
+      } else {
+        alert("Cancel Failed ❌");
       }
+    }
 
+    // ✅ Search + Filter
+    document.getElementById("searchInput").addEventListener("input", filterData);
+    document.getElementById("statusFilter").addEventListener("change", filterData);
 
+    function filterData() {
+      let search = document.getElementById("searchInput").value.toLowerCase();
+      let status = document.getElementById("statusFilter").value;
 
+      let filtered = allShipments.filter((s) => {
+        let matchSearch =
+          s.orderId.toLowerCase().includes(search) ||
+          (s.waybill || "").toLowerCase().includes(search);
 
-      data.shipments.forEach(s => {
+        let matchStatus =
+          status === "all" || s.status === status;
 
-        list.innerHTML += `
-
-          <tr>
-
-            <td>${s.waybill || "Not Assigned"}</td>
-
-            <td>${s.pickupCity || "N/A"}</td>
-
-            <td>${s.deliveryCity || "N/A"}</td>
-
-            <td>
-
-              <span class="status ${s.status === "Delivered" ? "delivered" : "pending"}">
-
-                ${s.status || "Pending"}
-
-              </span>
-
-            </td>
-
-            <td>
-
-              <button class="btn track-btn" onclick="trackShipment('${s.waybill}')">Track</button>
-
-              <button class="btn cancel-btn" onclick="cancelShipment('${s._id}')">Cancel</button>
-
-              <button class="btn details-btn" onclick="viewDetails('${s._id}')">Details</button>
-
-            </td>
-
-          </tr>
-
-        `;
-
+        return matchSearch && matchStatus;
       });
 
+      renderTable(filtered);
     }
 
-
-
-
-    // Track Shipment
-
-    function trackShipment(waybill) {
-
-      if (!waybill) return alert("Waybill not assigned yet!");
-
-      window.open(`${BACKEND_URL}/api/shipment/track/${waybill}`, "_blank");
-
+    function closePopup() {
+      document.getElementById("popup").style.display = "none";
     }
-
-
-
-
-    // Cancel Shipment
-
-    async function cancelShipment(id) {
-
-      if (!confirm("Cancel this shipment?")) return;
-
-
-
-
-      const token = localStorage.getItem("adminToken");
-
-
-
-
-      await fetch(`${BACKEND_URL}/api/shipment/cancel/${id}`, {
-
-        method: "DELETE",
-
-        headers: { Authorization: `Bearer ${token}` }
-
-      });
-
-
-
-
-      alert("Shipment Cancelled ❌");
-
-      loadShipments();
-
-    }
-
-
-
-
-    // View Details Popup
-
-    function viewDetails(id) {
-
-      document.getElementById("detailsModal").style.display = "flex";
-
-      document.getElementById("modalData").innerHTML =
-
-        "Loading shipment details...";
-
-
-
-
-      document.getElementById("modalData").innerHTML = `
-
-        <b>Shipment ID:</b> ${id}<br>
-
-        Full shipment info will come from backend API soon.
-
-      `;
-
-    }
-
-
-
-
-    function closeModal() {
-
-      document.getElementById("detailsModal").style.display = "none";
-
-    }
-
-
-
-
-    // Logout
 
     function logout() {
-
       localStorage.removeItem("adminToken");
-
       window.location.href = "login.html";
-
     }
 
-
-
-
     loadShipments();
-
   </script>
 
-
-
-
 </body>
-
 </html>
