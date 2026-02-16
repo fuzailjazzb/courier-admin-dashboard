@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Add Shipment - NXTShip Admin</title>
@@ -63,10 +64,11 @@
       padding: 25px;
       border-radius: 18px;
       width: 500px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
     }
 
-    input, select {
+    input,
+    select {
       width: 100%;
       padding: 12px;
       margin: 8px 0;
@@ -148,7 +150,7 @@
   <script>
     const API_URL = "https://nxtship-backend.onrender.com/api/shipment/book";
 
-    window.onload = function() {
+    window.onload = function () {
 
       const orderInput = document.getElementById("orderId");
 
@@ -183,6 +185,8 @@
         weight: weight.value
       };
 
+      console.log("sending data:", shipmentData);
+
       try {
         const res = await fetch(API_URL, {
           method: "POST",
@@ -214,7 +218,7 @@
       }
     }
 
-    console.log("sending data:", shipmentData);
+
 
     function logout() {
       localStorage.removeItem("adminToken");
@@ -223,4 +227,5 @@
   </script>
 
 </body>
+
 </html>
