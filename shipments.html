@@ -220,103 +220,135 @@
     </div>
   </div>
 
-  <script>
-    const BACKEND_URL = "https://nxtship-backend.onrender.com";
-    const token = localStorage.getItem("adminToken");
+<script>
+  const BACKEND_URL = "https://nxtship-backend.onrender.com";
+  const token = localStorage.getItem("adminToken");
 
-    if (!token) {
-      alert("Please login first!");
-      window.location.href = "login.html";
-    }
+  if (!token) {
+    alert("Please login first!");
+    window.location.href = "login.html";
+  }
 
-    let allShipments = [];
+  let allShipments = [];
 
-    // ✅ Load Shipments
-    async function loadShipments() {
+  // ✅ Load Shipments
+  async function loadShipments() {
+    try {
       const res = await fetch(`${BACKEND_URL}/api/shipment/all`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       const data = await res.json();
-      allShipments = data.shipments;
-      renderTable(allShipments);
-    }
 
-    const orderId = data.orderId
-
-    // ✅ Render Table
-    function renderTable(shipments) {
-      const table = document.getElementById("shipmentTable");
-      table.innerHTML = "";
-
-      shipments.forEach((s) => {
-        let badgeClass =
-          s.status === "Delivered" ? "delivered" :
-          s.status === "Cancelled" ? "cancelled" :
-          s.status === "Booked" ? "booked" :
-          "pending";
-
-        table.innerHTML += `
-          <tr>
-            <td>${s.waybill || "Not Assigned"}</td>
-            <td>${s.orderId}</td>
-
-            <td>
-              <span class="badge ${badgeClass}">
-                ${s.status}
-              </span>
-            </td>
-
-            <td>
-              <button class="btn details-btn"
-                onclick='showDetails(${JSON.stringify(s)})'>
-                View
-              </button>
-            </td>
-
-            <td>
-              <button class="btn track-btn"
-                onclick="trackShipment('${s.waybill}')">
-                Track
-              </button>
-            </td>
-
-            <td>
-              <button class="btn cancel-btn"
-                onclick="cancelShipment('${s._id}')">
-                Cancel
-              </button>
-            </td>
-          </tr>
-        `;
-      });
-    }
-
-    // ✅ Shipment Details Popup
-    function showDetails(shipment) {
-      document.getElementById("popup").style.display = "flex";
-
-      document.getElementById("shipmentDetails").innerHTML = `
-        <b>Waybill:</b> ${shipment.waybill}<br/>
-        <b>Order ID:</b> ${shipment.orderId}<br/>
-        <b>Customer:</b> ${shipment.customerName}<br/>
-        <b>City:</b> ${shipment.city}<br/>
-        <b>Status:</b> ${shipment.status}<br/>
-      `;
-    }
-
-    // ✅ Track Shipment Timeline
-    async function trackShipment(waybill) {
-      if (!waybill) {
-        alert("Waybill not assigned yet!");
+      if (!data.success) {
+        alert("Failed to load shipments ❌");
         return;
       }
 
-      document.getElementById("popup").style.display = "flex";
+      allShipments = data.shipments || [];
+      renderTable(allShipments);
+    } catch (err) {
+      alert("Server Error ❌ Unable to load shipments");
+      console.log(err);
+    }
+  }
 
-      const res = await fetch(`${BACKEND_URL}/api/shipment/track/${waybill}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+  // ✅ Render Table
+  function renderTable(shipments) {
+    const table = document.getElementById("shipmentTable");
+    table.innerHTML = "";
+
+    if (shipments.length === 0) {
+      table.innerHTML = `
+        <tr>
+          <td colspan="6">No shipments found</td>
+        </tr>
+      `;
+      return;
+    }
+
+    shipments.forEach((s, index) => {
+      let badgeClass =
+        s.status === "Delivered"
+          ? "delivered"
+          : s.status === "Cancelled"
+          ? "cancelled"
+          : s.status === "Booked"
+          ? "booked"
+          : "pending";
+
+      table.innerHTML += `
+        <tr>
+          <td>${s.waybill || "Not Assigned"}</td>
+          <td>${s.orderId || "N/A"}</td>
+
+          <td>
+            <span class="badge ${badgeClass}">
+              ${s.status}
+            </span>
+          </td>
+
+          <td>
+            <button class="btn details-btn"
+              onclick="showDetails(${index})">
+              View
+            </button>
+          </td>
+
+          <td>
+            <button class="btn track-btn"
+              onclick="trackShipment('${s.waybill || ""}')">
+              Track
+            </button>
+          </td>
+
+          <td>
+            <button class="btn cancel-btn"
+              onclick="cancelShipment('${s._id}')">
+              Cancel
+            </button>
+          </td>
+        </tr>
+      `;
+    });
+  }
+
+  // ✅ Shipment Details Popup
+  function showDetails(index) {
+    const shipment = allShipments[index];
+
+    document.getElementById("popup").style.display = "flex";
+
+    document.getElementById("shipmentDetails").innerHTML = `
+      <b>Waybill:</b> ${shipment.waybill || "Not Assigned"}<br/>
+      <b>Order ID:</b> ${shipment.orderId}<br/>
+      <b>Customer:</b> ${shipment.customerName || "N/A"}<br/>
+      <b>City:</b> ${shipment.city || "N/A"}<br/>
+      <b>Status:</b> ${shipment.status}<br/>
+    `;
+
+    document.getElementById("timeline").innerHTML = "";
+  }
+
+  // ✅ Track Shipment Timeline
+  async function trackShipment(waybill) {
+    if (!waybill) {
+      alert("Waybill not assigned yet!");
+      return;
+    }
+
+    document.getElementById("popup").style.display = "flex";
+    document.getElementById("timeline").innerHTML = "<p>Loading...</p>";
+
+    try {
+      const res = await fetch(
+        `${BACKEND_URL}/api/shipment/track/${waybill}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       const data = await res.json();
       const timeline = document.getElementById("timeline");
@@ -340,16 +372,24 @@
           </div>
         `;
       });
+    } catch (err) {
+      alert("Tracking failed ❌");
+      console.log(err);
     }
+  }
 
-    // ✅ Cancel Shipment (Backend + Delhivery API Ready)
-    async function cancelShipment(id) {
-      if (!confirm("Cancel this shipment?")) return;
+  // ✅ Cancel Shipment
+  async function cancelShipment(id) {
+    if (!confirm("Cancel this shipment?")) return;
 
-      const res = await fetch(`${BACKEND_URL}/api/shipment/cancel/${id}`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` }
-      });
+    try {
+      const res = await fetch(
+        `${BACKEND_URL}/api/shipment/cancel/${id}`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       const data = await res.json();
 
@@ -359,41 +399,54 @@
       } else {
         alert("Cancel Failed ❌");
       }
+    } catch (err) {
+      alert("Server Error ❌");
+      console.log(err);
     }
+  }
 
-    // ✅ Search + Filter
-    document.getElementById("searchInput").addEventListener("input", filterData);
-    document.getElementById("statusFilter").addEventListener("change", filterData);
+  // ✅ Search + Filter
+  document
+    .getElementById("searchInput")
+    .addEventListener("input", filterData);
 
-    function filterData() {
-      let search = document.getElementById("searchInput").value.toLowerCase();
-      let status = document.getElementById("statusFilter").value;
+  document
+    .getElementById("statusFilter")
+    .addEventListener("change", filterData);
 
-      let filtered = allShipments.filter((s) => {
-        let matchSearch =
-          s.orderId.toLowerCase().includes(search) ||
-          (s.waybill || "").toLowerCase().includes(search);
+  function filterData() {
+    let search = document
+      .getElementById("searchInput")
+      .value.toLowerCase();
 
-        let matchStatus =
-          status === "all" || s.status === status;
+    let status = document.getElementById("statusFilter").value;
 
-        return matchSearch && matchStatus;
-      });
+    let filtered = allShipments.filter((s) => {
+      let matchSearch =
+        (s.orderId || "").toLowerCase().includes(search) ||
+        (s.waybill || "").toLowerCase().includes(search);
 
-      renderTable(filtered);
-    }
+      let matchStatus = status === "all" || s.status === status;
 
-    function closePopup() {
-      document.getElementById("popup").style.display = "none";
-    }
+      return matchSearch && matchStatus;
+    });
 
-    function logout() {
-      localStorage.removeItem("adminToken");
-      window.location.href = "login.html";
-    }
+    renderTable(filtered);
+  }
 
-    loadShipments();
-  </script>
+  function closePopup() {
+    document.getElementById("popup").style.display = "none";
+  }
+
+  function logout() {
+    localStorage.removeItem("adminToken");
+    window.location.href = "login.html";
+  }
+
+  // ✅ Auto Load
+  loadShipments();
+</script>
+
 
 </body>
 </html>
