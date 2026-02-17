@@ -11,7 +11,8 @@
       background: #f5f7fb;
       display: flex;
     }
-/* Sidebar */
+
+    /* Sidebar */
     .sidebar {
       width: 250px;
       height: 100vh;
@@ -74,25 +75,33 @@
     td {
       padding: 12px;
       border-bottom: 1px solid #ddd;
+      text-align: center;
+    }
+
+    #msg {
+      margin-top: 15px;
+      font-weight: bold;
+      text-align: center;
     }
   </style>
 </head>
 
 <body>
-<!-- Sidebar -->
+
+  <!-- Sidebar -->
   <div class="sidebar">
     <h2>🚚 Courier Admin</h2>
 
     <div class="menu">
       <a href="dashboard.html">📊 Dashboard</a>
-      <a href="add-shipment.html">📑 Add Shipment</a>
+      <a href="add-shipment.html">➕ Add Shipment</a>
       <a href="shipments.html">📦 View Shipments</a>
       <a href="customers.html" class="active">👤 Customers</a>
       <a href="#" onclick="logout()">🚪 Logout</a>
     </div>
   </div>
 
-
+  <!-- Main -->
   <div class="main">
     <h1>👤 Customers List</h1>
 
@@ -105,26 +114,85 @@
         </tr>
       </thead>
 
-      <tbody>
-        <tr>
-          <td>Rahul Kumar</td>
-          <td>Patna</td>
-          <td>12</td>
-        </tr>
-        <tr>
-          <td>Aman Singh</td>
-          <td>Delhi</td>
-          <td>8</td>
-        </tr>
-      </tbody>
+      <!-- ✅ Dynamic Table Body -->
+      <tbody id="customerTable"></tbody>
     </table>
+
+    <p id="msg"></p>
   </div>
 
   <script>
-    function logout() {
-    localStorage.removeItem("adminToken");
-    window.location.href = "login.html";
+    const BACKEND_URL = "https://nxtship-backend.onrender.com";
+    const token = localStorage.getItem("adminToken");
+
+    if (!token) {
+      alert("Session expired! Please login again.");
+      window.location.href = "login.html";
     }
+
+    // ✅ Load Customers from Backend
+    async function loadCustomers() {
+      const table = document.getElementById("customerTable");
+      const msg = document.getElementById("msg");
+
+      msg.style.color = "black";
+      msg.innerText = "Loading customers... ⏳";
+
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/customer/all`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+
+        if (!data.success) {
+          msg.style.color = "red";
+          msg.innerText = "Failed to load customers ❌";
+          return;
+        }
+
+        const customers = data.customers || [];
+
+        table.innerHTML = "";
+
+        if (customers.length === 0) {
+          table.innerHTML = `
+            <tr>
+              <td colspan="3">No customers found</td>
+            </tr>
+          `;
+          msg.innerText = "";
+          return;
+        }
+
+        customers.forEach((c) => {
+          table.innerHTML += `
+            <tr>
+              <td>${c.name || "N/A"}</td>
+              <td>${c.city || "N/A"}</td>
+              <td>${c.totalOrders || 0}</td>
+            </tr>
+          `;
+        });
+
+        msg.innerText = "";
+
+      } catch (err) {
+        console.log(err);
+        msg.style.color = "red";
+        msg.innerText = "Server Error ❌ Backend not reachable";
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("adminToken");
+      window.location.href = "login.html";
+    }
+
+    // ✅ Auto Load Customers
+    loadCustomers();
   </script>
 
 </body>
