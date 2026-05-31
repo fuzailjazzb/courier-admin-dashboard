@@ -1,124 +1,296 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Customers</title>
-
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Customers — NXT Ship Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      margin: 0;
-      font-family: "Segoe UI", sans-serif;
-      background: #f5f7fb;
-      display: flex;
+    :root {
+      --sidebar-w: 260px;
+      --primary: #2563eb;
+      --bg: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+      --radius: 14px;
+      --shadow: 0 2px 8px rgba(0,0,0,0.07), 0 6px 20px rgba(0,0,0,0.05);
     }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--bg); display:flex; min-height:100vh; color:var(--text); }
 
-    /* Sidebar */
+    /* ── SIDEBAR ── */
     .sidebar {
-      width: 250px;
+      width: var(--sidebar-w);
       height: 100vh;
-      background: linear-gradient(to bottom, #0f172a, #1e293b);
+      background: linear-gradient(160deg, #0f172a 0%, #1e293b 100%);
       color: white;
-      padding: 25px;
-      position: fixed;
-      top: 0;
-      left: 0;
+      position: fixed; top:0; left:0;
+      display:flex; flex-direction:column; z-index:100;
+    }
+    .sidebar-logo { padding:28px 22px 20px; border-bottom:1px solid rgba(255,255,255,0.07); }
+    .sidebar-logo h2 { font-size:19px; font-weight:700; }
+    .sidebar-logo p { font-size:11px; color:rgba(255,255,255,0.35); margin-top:3px; }
+    .sidebar-nav { padding:12px 10px; flex:1; }
+    .sidebar-nav a {
+      display:flex; align-items:center; gap:10px;
+      padding:11px 14px; margin-bottom:3px; border-radius:10px;
+      color:rgba(255,255,255,0.7); text-decoration:none;
+      font-size:14px; font-weight:500; transition:0.18s;
+    }
+    .sidebar-nav a:hover { background:rgba(255,255,255,0.08); color:white; }
+    .sidebar-nav a.active { background:rgba(37,99,235,0.35); color:#93c5fd; }
+    .sidebar-bottom { padding:12px 10px; border-top:1px solid rgba(255,255,255,0.07); }
+    .sidebar-bottom a {
+      display:flex; align-items:center; gap:10px;
+      padding:10px 14px; border-radius:10px;
+      color:rgba(255,255,255,0.5); text-decoration:none;
+      font-size:14px; font-weight:500; cursor:pointer; transition:0.18s;
+    }
+    .sidebar-bottom a:hover { background:rgba(220,38,38,0.15); color:#fca5a5; }
+
+    /* ── MAIN ── */
+    .main { margin-left:var(--sidebar-w); width:100%; min-height:100vh; }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      background:white; padding:14px 26px;
+      display:flex; justify-content:space-between; align-items:center;
+      border-bottom:1px solid var(--border);
+      position:sticky; top:0; z-index:50;
+    }
+    .topbar h1 { font-size:18px; font-weight:700; }
+    .admin-badge { background:#eff6ff; color:var(--primary); padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600; }
+
+    /* ── PAGE BODY ── */
+    .page-body { padding:24px 26px; }
+
+    /* ── SUMMARY STRIP ── */
+    .summary-strip {
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+      gap:14px;
+      margin-bottom:22px;
+    }
+    .strip-card {
+      background:white; border-radius:var(--radius); padding:18px 20px;
+      box-shadow:var(--shadow); border-left:4px solid transparent;
+    }
+    .strip-card.blue   { border-left-color:#3b82f6; }
+    .strip-card.green  { border-left-color:#22c55e; }
+    .strip-card.purple { border-left-color:#8b5cf6; }
+    .strip-card .sc-label { font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; }
+    .strip-card .sc-val   { font-size:26px; font-weight:700; margin-top:4px; }
+
+    /* ── CONTROLS ── */
+    .controls {
+      display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap; align-items:center;
+    }
+    .controls input {
+      padding:9px 13px; border-radius:8px; border:1.5px solid var(--border);
+      font-size:13px; font-family:inherit; outline:none; flex:1; min-width:200px;
+      transition:border-color 0.15s;
+    }
+    .controls input:focus { border-color:var(--primary); }
+    .controls select {
+      padding:9px 13px; border-radius:8px; border:1.5px solid var(--border);
+      font-size:13px; font-family:inherit; outline:none; min-width:160px;
+      transition:border-color 0.15s; background:white;
     }
 
-    .sidebar h2 {
-      font-size: 22px;
-      margin-bottom: 40px;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    /* ── TABLE BOX ── */
+    .table-box { background:white; border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
+    .table-header {
+      padding:18px 22px; border-bottom:1px solid var(--border);
+      display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
     }
-
-    .menu a {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px;
-      margin-bottom: 10px;
-      border-radius: 10px;
-      color: white;
-      text-decoration: none;
-      font-size: 16px;
-      transition: 0.3s;
-    }
-
-    .menu a:hover,
-    .menu a.active {
-      background: rgba(255, 255, 255, 0.15);
-    }
-
-    .main {
-      margin-left: 300px;
-      padding: 25px;
-      width: 100%;
-    }
-
-    table {
-      width: 100%;
-      background: white;
-      border-radius: 15px;
-      border-collapse: collapse;
-      overflow: hidden;
-      box-shadow: 0 5px 12px rgba(0,0,0,0.08);
-    }
-
+    .table-header h2 { font-size:16px; font-weight:700; }
+    .table-header span { font-size:13px; color:var(--muted); }
+    .table-wrap { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; min-width:640px; }
+    thead tr { background:#f8fafc; }
     th {
-      background: #2563eb;
-      color: white;
-      padding: 12px;
+      padding:11px 14px; text-align:left;
+      font-size:11px; font-weight:700; color:var(--muted);
+      text-transform:uppercase; letter-spacing:0.5px;
+      border-bottom:1px solid var(--border); white-space:nowrap;
     }
-
     td {
-      padding: 12px;
-      border-bottom: 1px solid #ddd;
-      text-align: center;
+      padding:13px 14px; font-size:13px;
+      border-bottom:1px solid #f1f5f9; color:var(--text);
     }
+    tr:last-child td { border-bottom:none; }
+    tr:hover td { background:#fafbff; }
 
-    #msg {
-      margin-top: 15px;
-      font-weight: bold;
-      text-align: center;
+    /* ── BADGES ── */
+    .badge { display:inline-flex; align-items:center; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; }
+    .badge-green  { background:#dcfce7; color:#16a34a; }
+    .badge-red    { background:#fee2e2; color:#dc2626; }
+    .badge-blue   { background:#dbeafe; color:#1d4ed8; }
+    .badge-gray   { background:#f1f5f9; color:#475569; }
+
+    /* ── WALLET CELL ── */
+    .wallet-amount { font-weight:700; font-size:14px; color:#16a34a; }
+    .wallet-zero   { color:var(--muted); font-weight:500; }
+
+    /* ── BUTTON ── */
+    .btn {
+      padding:7px 13px; border:none; border-radius:7px;
+      font-size:12px; font-weight:700; cursor:pointer; transition:0.15s;
+      font-family:inherit;
     }
+    .btn-primary { background:var(--primary); color:white; }
+    .btn-primary:hover { background:#1d4ed8; }
+    .btn-ghost { background:#f1f5f9; color:var(--text); border:1px solid var(--border); }
+    .btn-ghost:hover { background:var(--border); }
+
+    /* ── DETAIL POPUP ── */
+    .popup-overlay {
+      display:none; position:fixed; inset:0;
+      background:rgba(0,0,0,0.5); z-index:999;
+      justify-content:center; align-items:center;
+    }
+    .popup-overlay.show { display:flex; }
+    .popup-box {
+      background:white; border-radius:18px; padding:28px;
+      width:90%; max-width:460px;
+      box-shadow:0 20px 60px rgba(0,0,0,0.25);
+      animation:popIn 0.25s ease;
+    }
+    @keyframes popIn { from{opacity:0;transform:scale(0.95)} to{opacity:1;transform:scale(1)} }
+    .popup-box h3 { font-size:17px; font-weight:700; margin-bottom:18px; }
+    .detail-row {
+      display:flex; justify-content:space-between;
+      padding:10px 0; border-bottom:1px solid #f1f5f9;
+      font-size:13px;
+    }
+    .detail-row:last-of-type { border:none; }
+    .detail-row .dr-label { color:var(--muted); font-weight:600; }
+    .detail-row .dr-val { font-weight:600; text-align:right; }
+    .popup-actions { display:flex; gap:10px; margin-top:18px; }
+
+    /* ── LOADING SKELETON ── */
+    .skel { background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%); background-size:200% 100%; animation:shimmer 1.5s infinite; border-radius:6px; height:16px; display:inline-block; }
+    @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+
+    /* ── TOAST ── */
+    .toast {
+      position:fixed; top:20px; right:20px; z-index:9999;
+      background:white; padding:14px 18px; border-radius:12px;
+      font-size:13px; font-weight:600;
+      box-shadow:0 10px 30px rgba(0,0,0,0.15);
+      animation:slideIn 0.3s ease;
+      border-left:4px solid var(--primary);
+    }
+    @keyframes slideIn { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:translateX(0)} }
+
+    /* ── EMPTY STATE ── */
+    .empty-state { text-align:center; padding:50px 20px; }
+    .empty-state .es-icon { font-size:44px; margin-bottom:14px; }
+    .empty-state h3 { font-size:16px; font-weight:700; }
+    .empty-state p { font-size:13px; color:var(--muted); margin-top:6px; }
   </style>
 </head>
-
 <body>
 
   <!-- Sidebar -->
   <div class="sidebar">
-    <h2>🚚 Courier Admin</h2>
-
-    <div class="menu">
+    <div class="sidebar-logo">
+      <h2>🚚 NXT Ship</h2>
+      <p>Admin Panel</p>
+    </div>
+    <nav class="sidebar-nav">
       <a href="dashboard.html">📊 Dashboard</a>
       <a href="add-shipment.html">➕ Add Shipment</a>
       <a href="shipments.html">📦 View Shipments</a>
       <a href="customers.html" class="active">👤 Customers</a>
-      <a href="#" onclick="logout()">🚪 Logout</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <a onclick="logout()">🚪 Logout</a>
     </div>
   </div>
 
   <!-- Main -->
   <div class="main">
-    <h1>👤 Customers List</h1>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>City</th>
-          <th>Total Orders</th>
-        </tr>
-      </thead>
+    <!-- Topbar -->
+    <div class="topbar">
+      <h1>Customers</h1>
+      <div class="admin-badge">Admin 👋</div>
+    </div>
 
-      <!-- ✅ Dynamic Table Body -->
-      <tbody id="customerTable"></tbody>
-    </table>
+    <!-- Page Body -->
+    <div class="page-body">
 
-    <p id="msg"></p>
+      <!-- Summary Strip -->
+      <div class="summary-strip">
+        <div class="strip-card blue">
+          <div class="sc-label">Total Customers</div>
+          <div class="sc-val" id="totalCustomers">—</div>
+        </div>
+        <div class="strip-card green">
+          <div class="sc-label">Total Wallet Balance</div>
+          <div class="sc-val" id="totalWalletSum">—</div>
+        </div>
+        <div class="strip-card purple">
+          <div class="sc-label">Avg. Wallet Balance</div>
+          <div class="sc-val" id="avgWallet">—</div>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls">
+        <input id="searchInput" placeholder="🔍  Search by name, email or city..." oninput="filterCustomers()"/>
+        <select id="balanceFilter" onchange="filterCustomers()">
+          <option value="all">All Balances</option>
+          <option value="positive">Balance &gt; 0</option>
+          <option value="zero">Balance = 0</option>
+          <option value="high">Balance ≥ ₹500</option>
+        </select>
+        <button class="btn btn-ghost" onclick="loadCustomers()">🔄 Refresh</button>
+        <button class="btn btn-primary" onclick="exportCSV()">📥 Export CSV</button>
+      </div>
+
+      <!-- Table -->
+      <div class="table-box">
+        <div class="table-header">
+          <h2>👤 Customer List</h2>
+          <span id="countLabel">Loading...</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>City</th>
+                <th>Total Orders</th>
+                <th>💰 Wallet Balance</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="customerTable">
+              <tr><td colspan="8" style="text-align:center;padding:28px;color:var(--muted);">Loading customers...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Customer Detail Popup -->
+  <div class="popup-overlay" id="detailPopup">
+    <div class="popup-box">
+      <h3>👤 Customer Details</h3>
+      <div id="detailContent"></div>
+      <div class="popup-actions">
+        <button class="btn btn-ghost" style="flex:1" onclick="closePopup()">Close</button>
+        <button class="btn btn-primary" style="flex:1" id="viewShipmentsBtn">📦 View Shipments</button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -126,64 +298,186 @@
     const token = localStorage.getItem("adminToken");
 
     if (!token) {
-      alert("Session expired! Please login again.");
       window.location.href = "login.html";
     }
 
-    // ✅ Load Customers from Backend
+    let allCustomers = [];
+    let filteredCustomers = [];
+
+    function showToast(msg, color="#2563eb") {
+      document.querySelectorAll(".toast").forEach(t => t.remove());
+      const el = document.createElement("div");
+      el.className = "toast";
+      el.style.borderLeftColor = color;
+      el.innerText = msg;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 3500);
+    }
+
     async function loadCustomers() {
       const table = document.getElementById("customerTable");
-      const msg = document.getElementById("msg");
+      const label = document.getElementById("countLabel");
 
-      msg.style.color = "black";
-      msg.innerText = "Loading customers... ⏳";
+      table.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--muted);">Loading...</td></tr>`;
+      label.innerText = "Loading...";
 
       try {
         const res = await fetch(`${BACKEND_URL}/api/customer/all`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` }
         });
-
         const data = await res.json();
 
         if (!data.success) {
-          msg.style.color = "red";
-          msg.innerText = "Failed to load customers ❌";
+          showToast("Failed to load customers ❌", "#dc2626");
+          table.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:28px;color:#dc2626;">Failed to load. Try again.</td></tr>`;
           return;
         }
 
-        const customers = data.customers || [];
+        allCustomers = data.customers || [];
+        filteredCustomers = [...allCustomers];
 
-        table.innerHTML = "";
+        // Summary stats
+        document.getElementById("totalCustomers").innerText = allCustomers.length;
 
-        if (customers.length === 0) {
-          table.innerHTML = `
-            <tr>
-              <td colspan="3">No customers found</td>
-            </tr>
-          `;
-          msg.innerText = "";
-          return;
-        }
+        const totalBal = allCustomers.reduce((sum, c) => sum + (parseFloat(c.walletBalance) || 0), 0);
+        document.getElementById("totalWalletSum").innerText = "₹" + totalBal.toFixed(2);
 
-        customers.forEach((c) => {
-          table.innerHTML += `
-            <tr>
-              <td>${c.name || "N/A"}</td>
-              <td>${c.city || "N/A"}</td>
-              <td>${c.totalOrders || 0}</td>
-            </tr>
-          `;
-        });
+        const avg = allCustomers.length ? totalBal / allCustomers.length : 0;
+        document.getElementById("avgWallet").innerText = "₹" + avg.toFixed(2);
 
-        msg.innerText = "";
+        renderTable(filteredCustomers);
 
-      } catch (err) {
-        console.log(err);
-        msg.style.color = "red";
-        msg.innerText = "Server Error ❌ Backend not reachable";
+      } catch(err) {
+        console.error(err);
+        showToast("Server Error ❌", "#dc2626");
+        table.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:28px;color:#dc2626;">Server unreachable.</td></tr>`;
       }
+    }
+
+    function renderTable(customers) {
+      const table = document.getElementById("customerTable");
+      const label = document.getElementById("countLabel");
+
+      label.innerText = customers.length + " customer" + (customers.length !== 1 ? "s" : "");
+
+      if (!customers.length) {
+        table.innerHTML = `
+          <tr><td colspan="8">
+            <div class="empty-state">
+              <div class="es-icon">👥</div>
+              <h3>No Customers Found</h3>
+              <p>Try adjusting your search or filters.</p>
+            </div>
+          </td></tr>
+        `;
+        return;
+      }
+
+      table.innerHTML = customers.map((c, i) => {
+        const balance = parseFloat(c.walletBalance) || 0;
+        const balClass = balance > 0 ? "wallet-amount" : "wallet-zero";
+        const balText  = balance > 0 ? "₹" + balance.toFixed(2) : "₹0.00";
+
+        return `
+          <tr>
+            <td style="color:var(--muted);font-size:12px;">${i + 1}</td>
+            <td style="font-weight:600;">${c.name || "N/A"}</td>
+            <td style="color:var(--muted);">${c.email || "—"}</td>
+            <td>${c.phone || "—"}</td>
+            <td>${c.city || "—"}</td>
+            <td style="text-align:center;">${c.totalOrders || 0}</td>
+            <td><span class="${balClass}">${balText}</span></td>
+            <td>
+              <button class="btn btn-ghost" style="font-size:11px;padding:6px 10px;" onclick='showDetails(${i})'>View</button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function filterCustomers() {
+      const search  = document.getElementById("searchInput").value.toLowerCase();
+      const balFilt = document.getElementById("balanceFilter").value;
+
+      filteredCustomers = allCustomers.filter(c => {
+        const matchSearch =
+          (c.name  || "").toLowerCase().includes(search) ||
+          (c.email || "").toLowerCase().includes(search) ||
+          (c.city  || "").toLowerCase().includes(search) ||
+          (c.phone || "").toLowerCase().includes(search);
+
+        const bal = parseFloat(c.walletBalance) || 0;
+        const matchBalance =
+          balFilt === "all"      ? true :
+          balFilt === "positive" ? bal > 0 :
+          balFilt === "zero"     ? bal === 0 :
+          balFilt === "high"     ? bal >= 500 : true;
+
+        return matchSearch && matchBalance;
+      });
+
+      renderTable(filteredCustomers);
+    }
+
+    function showDetails(index) {
+      const c = filteredCustomers[index];
+      const balance = parseFloat(c.walletBalance) || 0;
+
+      document.getElementById("detailContent").innerHTML = `
+        <div class="detail-row"><span class="dr-label">Name</span><span class="dr-val">${c.name || "N/A"}</span></div>
+        <div class="detail-row"><span class="dr-label">Email</span><span class="dr-val">${c.email || "—"}</span></div>
+        <div class="detail-row"><span class="dr-label">Phone</span><span class="dr-val">${c.phone || "—"}</span></div>
+        <div class="detail-row"><span class="dr-label">City</span><span class="dr-val">${c.city || "—"}</span></div>
+        <div class="detail-row"><span class="dr-label">State</span><span class="dr-val">${c.state || "—"}</span></div>
+        <div class="detail-row"><span class="dr-label">Pincode</span><span class="dr-val">${c.pincode || "—"}</span></div>
+        <div class="detail-row"><span class="dr-label">Total Orders</span><span class="dr-val">${c.totalOrders || 0}</span></div>
+        <div class="detail-row">
+          <span class="dr-label">💰 Wallet Balance</span>
+          <span class="dr-val" style="color:#16a34a;font-size:16px;">₹${balance.toFixed(2)}</span>
+        </div>
+        <div class="detail-row"><span class="dr-label">Joined</span><span class="dr-val">${c.createdAt ? new Date(c.createdAt).toLocaleDateString("en-IN") : "—"}</span></div>
+      `;
+
+      // View shipments button — pass customer id
+      document.getElementById("viewShipmentsBtn").onclick = () => {
+        window.location.href = `shipments.html?customer=${c._id}`;
+      };
+
+      document.getElementById("detailPopup").classList.add("show");
+    }
+
+    function closePopup() {
+      document.getElementById("detailPopup").classList.remove("show");
+    }
+
+    // Close popup on overlay click
+    document.getElementById("detailPopup").addEventListener("click", function(e) {
+      if (e.target === this) closePopup();
+    });
+
+    function exportCSV() {
+      if (!filteredCustomers.length) { showToast("No data to export", "#f97316"); return; }
+
+      const headers = ["#","Name","Email","Phone","City","Total Orders","Wallet Balance"];
+      const rows = filteredCustomers.map((c, i) => [
+        i+1,
+        `"${c.name||""}"`,
+        `"${c.email||""}"`,
+        `"${c.phone||""}"`,
+        `"${c.city||""}"`,
+        c.totalOrders || 0,
+        parseFloat(c.walletBalance || 0).toFixed(2)
+      ]);
+
+      const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+      const blob = new Blob([csv], { type:"text/csv" });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement("a");
+      a.href     = url;
+      a.download = "customers-" + new Date().toISOString().slice(0,10) + ".csv";
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("✅ CSV exported!");
     }
 
     function logout() {
@@ -191,7 +485,6 @@
       window.location.href = "login.html";
     }
 
-    // ✅ Auto Load Customers
     loadCustomers();
   </script>
 

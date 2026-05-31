@@ -1,452 +1,551 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Shipments - NXTShip Admin</title>
-
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shipments — NXT Ship Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: Segoe UI, sans-serif;
-      margin: 0;
-      background: #f5f7fb;
-      display: flex;
+    :root {
+      --sidebar-w: 260px;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --bg: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+      --radius: 14px;
+      --shadow: 0 2px 8px rgba(0,0,0,0.07), 0 6px 20px rgba(0,0,0,0.05);
     }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--bg); display:flex; min-height:100vh; color:var(--text); }
 
-    /* Sidebar */
+    /* ── SIDEBAR ── */
     .sidebar {
-      width: 250px;
+      width: var(--sidebar-w);
       height: 100vh;
-      background: linear-gradient(to bottom, #0f172a, #1e293b);
+      background: linear-gradient(160deg, #0f172a 0%, #1e293b 100%);
       color: white;
-      padding: 25px;
-      position: fixed;
+      position: fixed; top:0; left:0;
+      display:flex; flex-direction:column; z-index:100;
     }
-
-    .sidebar a {
-      display: block;
-      padding: 12px;
-      margin-bottom: 10px;
-      border-radius: 10px;
-      text-decoration: none;
-      color: white;
+    .sidebar-logo { padding:28px 22px 20px; border-bottom:1px solid rgba(255,255,255,0.07); }
+    .sidebar-logo h2 { font-size:19px; font-weight:700; }
+    .sidebar-logo p  { font-size:11px; color:rgba(255,255,255,0.35); margin-top:3px; }
+    .sidebar-nav { padding:12px 10px; flex:1; }
+    .sidebar-nav a {
+      display:flex; align-items:center; gap:10px;
+      padding:11px 14px; margin-bottom:3px; border-radius:10px;
+      color:rgba(255,255,255,0.7); text-decoration:none;
+      font-size:14px; font-weight:500; transition:0.18s;
     }
-
-    .sidebar a:hover,
-    .sidebar a.active {
-      background: rgba(255, 255, 255, 0.15);
+    .sidebar-nav a:hover { background:rgba(255,255,255,0.08); color:white; }
+    .sidebar-nav a.active { background:rgba(37,99,235,0.35); color:#93c5fd; }
+    .sidebar-bottom { padding:12px 10px; border-top:1px solid rgba(255,255,255,0.07); }
+    .sidebar-bottom a {
+      display:flex; align-items:center; gap:10px;
+      padding:10px 14px; border-radius:10px;
+      color:rgba(255,255,255,0.5); text-decoration:none;
+      font-size:14px; font-weight:500; cursor:pointer; transition:0.18s;
     }
+    .sidebar-bottom a:hover { background:rgba(220,38,38,0.15); color:#fca5a5; }
 
-    /* Main */
-    .main {
-      margin-left: 280px;
-      padding: 30px;
-      width: 100%;
+    /* ── MAIN ── */
+    .main { margin-left:var(--sidebar-w); width:100%; min-height:100vh; }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      background:white; padding:14px 26px;
+      display:flex; justify-content:space-between; align-items:center;
+      border-bottom:1px solid var(--border);
+      position:sticky; top:0; z-index:50;
     }
+    .topbar h1 { font-size:18px; font-weight:700; }
+    .admin-badge { background:#eff6ff; color:var(--primary); padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600; }
 
-    h1 {
-      font-size: 26px;
-      margin-bottom: 15px;
-    }
+    /* ── PAGE BODY ── */
+    .page-body { padding:24px 26px; }
 
-    /* Controls */
+    /* ── CONTROLS ── */
     .controls {
-      display: flex;
-      gap: 15px;
-      margin-bottom: 20px;
+      display:flex; gap:12px; margin-bottom:18px; flex-wrap:wrap; align-items:center;
     }
-
-    input, select {
-      padding: 12px;
-      border-radius: 10px;
-      border: 1px solid #ddd;
-      font-size: 14px;
-      outline: none;
-      width: 250px;
+    .controls input {
+      padding:10px 13px; border-radius:8px;
+      border:1.5px solid var(--border); font-size:13px; font-family:inherit;
+      outline:none; flex:1; min-width:200px; transition:border-color 0.15s;
     }
-
-    /* Table */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: white;
-      border-radius: 15px;
-      overflow: hidden;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    .controls input:focus { border-color:var(--primary); }
+    .controls select {
+      padding:10px 13px; border-radius:8px;
+      border:1.5px solid var(--border); font-size:13px; font-family:inherit;
+      outline:none; min-width:160px; background:white; transition:border-color 0.15s;
     }
-
-    th, td {
-      padding: 14px;
-      border-bottom: 1px solid #eee;
-      text-align: center;
-    }
-
-    th {
-      background: #2563eb;
-      color: white;
-    }
-
-    /* Status Badges */
-    .badge {
-      padding: 6px 12px;
-      border-radius: 12px;
-      font-size: 13px;
-      font-weight: bold;
-      color: white;
-      display: inline-block;
-    }
-
-    .pending { background: orange; }
-    .booked { background: #2563eb; }
-    .delivered { background: green; }
-    .cancelled { background: red; }
-
-    /* Buttons */
     .btn {
-      padding: 8px 12px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 13px;
+      padding:10px 16px; border:none; border-radius:8px;
+      font-size:13px; font-weight:700; cursor:pointer;
+      font-family:inherit; transition:0.15s; white-space:nowrap;
     }
+    .btn-primary { background:var(--primary); color:white; }
+    .btn-primary:hover { background:var(--primary-dark); }
+    .btn-ghost { background:white; color:var(--text); border:1.5px solid var(--border); }
+    .btn-ghost:hover { background:#f1f5f9; }
+    .btn-green  { background:#16a34a; color:white; }
+    .btn-green:hover  { background:#15803d; }
+    .btn-red    { background:#dc2626; color:white; }
+    .btn-red:hover    { background:#b91c1c; }
+    .btn-dark   { background:#1e293b; color:white; }
+    .btn-dark:hover   { background:#0f172a; }
+    .btn-sm { padding:6px 11px; font-size:12px; border-radius:7px; }
 
-    .track-btn { background: #16a34a; color: white; }
-    .cancel-btn { background: #dc2626; color: white; }
-    .details-btn { background: #111827; color: white; }
-
-    /* Popup */
-    .popup {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.6);
-      justify-content: center;
-      align-items: center;
+    /* ── TABLE BOX ── */
+    .table-box { background:white; border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
+    .table-header {
+      padding:18px 22px; border-bottom:1px solid var(--border);
+      display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
     }
+    .table-header h2 { font-size:16px; font-weight:700; }
+    .table-header span { font-size:13px; color:var(--muted); }
+    .table-wrap { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; min-width:700px; }
+    thead tr { background:#f8fafc; }
+    th {
+      padding:11px 14px; text-align:left;
+      font-size:11px; font-weight:700; color:var(--muted);
+      text-transform:uppercase; letter-spacing:0.5px;
+      border-bottom:1px solid var(--border); white-space:nowrap;
+    }
+    td {
+      padding:12px 14px; font-size:13px;
+      border-bottom:1px solid #f1f5f9; color:var(--text);
+    }
+    tr:last-child td { border-bottom:none; }
+    tr:hover td { background:#fafbff; }
 
+    /* ── BADGES ── */
+    .badge { display:inline-flex; align-items:center; padding:4px 11px; border-radius:20px; font-size:11px; font-weight:700; }
+    .badge-green  { background:#dcfce7; color:#16a34a; }
+    .badge-yellow { background:#fef3c7; color:#b45309; }
+    .badge-blue   { background:#dbeafe; color:#1d4ed8; }
+    .badge-red    { background:#fee2e2; color:#dc2626; }
+    .badge-gray   { background:#f1f5f9; color:#475569; }
+
+    /* ── ACTION BUTTONS CELL ── */
+    .actions-cell { display:flex; gap:6px; flex-wrap:wrap; }
+
+    /* ── POPUP ── */
+    .popup-overlay {
+      display:none; position:fixed; inset:0;
+      background:rgba(0,0,0,0.55); z-index:999;
+      justify-content:center; align-items:center; padding:20px;
+    }
+    .popup-overlay.show { display:flex; }
     .popup-box {
-      background: white;
-      width: 600px;
-      padding: 25px;
-      border-radius: 18px;
-      max-height: 85vh;
-      overflow-y: auto;
+      background:white; border-radius:18px; padding:28px;
+      width:100%; max-width:580px; max-height:88vh; overflow-y:auto;
+      box-shadow:0 20px 60px rgba(0,0,0,0.25);
+      animation:popIn 0.25s ease;
     }
+    @keyframes popIn { from{opacity:0;transform:scale(0.95)} to{opacity:1;transform:scale(1)} }
+    .popup-box h3 { font-size:17px; font-weight:700; margin-bottom:18px; display:flex; align-items:center; gap:8px; }
 
-    .popup-box h2 {
-      margin-top: 0;
-      color: #2563eb;
+    .detail-grid {
+      display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;
     }
-
-    .timeline {
-      margin-top: 15px;
-      text-align: left;
+    .detail-item {
+      background:#f8fafc; border-radius:8px; padding:12px 14px;
     }
+    .detail-item .di-label { font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; }
+    .detail-item .di-val   { font-size:14px; font-weight:600; margin-top:4px; }
 
+    .timeline-box { margin-top:16px; }
+    .timeline-box h4 { font-size:14px; font-weight:700; margin-bottom:12px; }
     .event {
-      padding: 10px;
-      border-left: 4px solid #2563eb;
-      margin-bottom: 12px;
-      background: #f1f5ff;
-      border-radius: 10px;
+      display:flex; gap:12px; padding:12px;
+      border-left:3px solid var(--primary); margin-bottom:10px;
+      background:#f1f5ff; border-radius:0 10px 10px 0;
     }
+    .event .ev-dot { width:8px; height:8px; background:var(--primary); border-radius:50%; margin-top:4px; flex-shrink:0; }
+    .event .ev-body b { font-size:13px; display:block; }
+    .event .ev-body small { font-size:12px; color:var(--muted); }
 
-    .close-btn {
-      margin-top: 15px;
-      padding: 10px 18px;
-      background: #111827;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
+    .popup-footer { display:flex; gap:10px; margin-top:20px; border-top:1px solid var(--border); padding-top:18px; }
+
+    /* ── TOAST ── */
+    .toast {
+      position:fixed; top:20px; right:20px; z-index:9999;
+      background:white; padding:14px 18px; border-radius:12px;
+      font-size:13px; font-weight:600;
+      box-shadow:0 10px 30px rgba(0,0,0,0.15);
+      animation:slideIn 0.3s ease; border-left:4px solid var(--primary);
     }
+    @keyframes slideIn { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:translateX(0)} }
+
+    /* ── EMPTY STATE ── */
+    .empty-state { text-align:center; padding:50px 20px; }
+    .empty-state .es-icon { font-size:44px; margin-bottom:14px; }
+    .empty-state h3 { font-size:16px; font-weight:700; }
+    .empty-state p  { font-size:13px; color:var(--muted); margin-top:6px; }
+
+    /* ── LOADING ── */
+    .loading-row td { text-align:center; padding:28px; color:var(--muted); }
   </style>
 </head>
-
 <body>
 
   <!-- Sidebar -->
   <div class="sidebar">
-    <h2>🚚 Courier Admin</h2>
-    <a href="dashboard.html">📊 Dashboard</a>
-    <a href="add-shipment.html">➕ Add Shipment</a>
-    <a href="shipments.html" class="active">📦 View Shipments</a>
-    <a href="customers.html">👤 Customers</a>
-    <a href="#" onclick="logout()">🚪 Logout</a>
+    <div class="sidebar-logo">
+      <h2>🚚 NXT Ship</h2>
+      <p>Admin Panel</p>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html">📊 Dashboard</a>
+      <a href="add-shipment.html">➕ Add Shipment</a>
+      <a href="shipments.html" class="active">📦 View Shipments</a>
+      <a href="customers.html">👤 Customers</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <a onclick="logout()">🚪 Logout</a>
+    </div>
   </div>
 
   <!-- Main -->
   <div class="main">
-    <h1>📦 All Shipments</h1>
 
-    <!-- Search + Filter -->
-    <div class="controls">
-      <input id="searchInput" placeholder="Search Waybill / OrderId..." />
-      <select id="statusFilter">
-        <option value="all">All Status</option>
-        <option value="Pending">Pending</option>
-        <option value="Booked">Booked</option>
-        <option value="Delivered">Delivered</option>
-        <option value="Cancelled">Cancelled</option>
-      </select>
+    <!-- Topbar -->
+    <div class="topbar">
+      <h1>All Shipments</h1>
+      <div class="admin-badge">Admin 👋</div>
     </div>
 
-    <!-- Table -->
-    <table>
-      <thead>
-        <tr>
-          <th>Waybill</th>
-          <th>Order ID</th>
-          <th>Status</th>
-          <th>Details</th>
-          <th>Track</th>
-          <th>Cancel</th>
-        </tr>
-      </thead>
-      <tbody id="shipmentTable"></tbody>
-    </table>
+    <!-- Page Body -->
+    <div class="page-body">
+
+      <!-- Controls -->
+      <div class="controls">
+        <input id="searchInput" placeholder="🔍  Search waybill or order ID..." oninput="filterData()"/>
+        <select id="statusFilter" onchange="filterData()">
+          <option value="all">All Statuses</option>
+          <option value="Pending">Pending</option>
+          <option value="Booked">Booked</option>
+          <option value="Delivered">Delivered</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+        <button class="btn btn-ghost" onclick="loadShipments()">🔄 Refresh</button>
+        <button class="btn btn-primary" onclick="exportCSV()">📥 Export CSV</button>
+      </div>
+
+      <!-- Table -->
+      <div class="table-box">
+        <div class="table-header">
+          <h2>📦 Shipments</h2>
+          <span id="countLabel">Loading...</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Waybill</th>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>City</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="shipmentTable">
+              <tr class="loading-row"><td colspan="6">Loading shipments...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
   </div>
 
-  <!-- Popup -->
-  <div class="popup" id="popup">
+  <!-- Detail / Track Popup -->
+  <div class="popup-overlay" id="popup">
     <div class="popup-box">
-      <h2>📍 Shipment Details</h2>
-      <p id="shipmentDetails"></p>
-
-      <h3>Tracking Timeline</h3>
-      <div class="timeline" id="timeline"></div>
-
-      <button class="close-btn" onclick="closePopup()">Close</button>
+      <h3 id="popupTitle">📍 Shipment Details</h3>
+      <div id="popupContent"></div>
+      <div class="popup-footer">
+        <button class="btn btn-ghost" style="flex:1" onclick="closePopup()">Close</button>
+        <button class="btn btn-green" style="flex:1" id="trackBtn">📍 Track Live</button>
+      </div>
     </div>
   </div>
 
-<script>
-  const BACKEND_URL = "https://nxtship-backend.onrender.com";
-  const token = localStorage.getItem("adminToken");
+  <script>
+    const BACKEND_URL = "https://nxtship-backend.onrender.com";
+    const token = localStorage.getItem("adminToken");
 
-  if (!token) {
-    alert("Please login first!");
-    window.location.href = "login.html";
-  }
-
-  let allShipments = [];
-
-  // ✅ Load Shipments
-  async function loadShipments() {
-    try {
-      const res = await fetch(`${BACKEND_URL}/api/shipment/all`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await res.json();
-
-      if (!data.success) {
-        alert("Failed to load shipments ❌");
-        return;
-      }
-
-      allShipments = data.shipments || [];
-      renderTable(allShipments);
-    } catch (err) {
-      alert("Server Error ❌ Unable to load shipments");
-      console.log(err);
-    }
-  }
-
-  // ✅ Render Table
-  function renderTable(shipments) {
-    const table = document.getElementById("shipmentTable");
-    table.innerHTML = "";
-
-    if (shipments.length === 0) {
-      table.innerHTML = `
-        <tr>
-          <td colspan="6">No shipments found</td>
-        </tr>
-      `;
-      return;
+    if (!token) {
+      window.location.href = "login.html";
     }
 
-    shipments.forEach((s, index) => {
-      let badgeClass =
-        s.status === "Delivered"
-          ? "delivered"
-          : s.status === "Cancelled"
-          ? "cancelled"
-          : s.status === "Booked"
-          ? "booked"
-          : "pending";
+    let allShipments = [];
+    let filteredShipments = [];
+    let currentShipment = null;
 
-      table.innerHTML += `
-        <tr>
-          <td>${s.waybill || "Not Assigned"}</td>
-          <td>${s.orderId || "N/A"}</td>
-
-          <td>
-            <span class="badge ${badgeClass}">
-              ${s.status}
-            </span>
-          </td>
-
-          <td>
-            <button class="btn details-btn"
-              onclick="showDetails(${index})">
-              View
-            </button>
-          </td>
-
-          <td>
-            <button class="btn track-btn"
-              onclick="trackShipment('${s.waybill || ""}')">
-              Track
-            </button>
-          </td>
-
-          <td>
-            <button class="btn cancel-btn"
-              onclick="cancelShipment('${s._id}')">
-              Cancel
-            </button>
-          </td>
-        </tr>
-      `;
-    });
-  }
-
-  // ✅ Shipment Details Popup
-  function showDetails(index) {
-    const shipment = allShipments[index];
-
-    document.getElementById("popup").style.display = "flex";
-
-    document.getElementById("shipmentDetails").innerHTML = `
-      <b>Waybill:</b> ${shipment.waybill || "Not Assigned"}<br/>
-      <b>Order ID:</b> ${shipment.orderId}<br/>
-      <b>Customer:</b> ${shipment.customerName || "N/A"}<br/>
-      <b>City:</b> ${shipment.city || "N/A"}<br/>
-      <b>Status:</b> ${shipment.status}<br/>
-    `;
-
-    document.getElementById("timeline").innerHTML = "";
-  }
-
-  // ✅ Track Shipment Timeline
-  async function trackShipment(waybill) {
-    if (!waybill) {
-      alert("Waybill not assigned yet!");
-      return;
+    function showToast(msg, color="#2563eb") {
+      document.querySelectorAll(".toast").forEach(t => t.remove());
+      const el = document.createElement("div");
+      el.className = "toast";
+      el.style.borderLeftColor = color;
+      el.innerText = msg;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 3500);
     }
 
-    document.getElementById("popup").style.display = "flex";
-    document.getElementById("timeline").innerHTML = "<p>Loading...</p>";
+    function statusBadge(status) {
+      const map = {
+        "delivered":  "badge-green",
+        "booked":     "badge-blue",
+        "cancelled":  "badge-red",
+        "pending":    "badge-yellow"
+      };
+      const cls = map[(status||"").toLowerCase()] || "badge-gray";
+      return `<span class="badge ${cls}">${status || "Pending"}</span>`;
+    }
 
-    try {
-      const res = await fetch(
-        `${BACKEND_URL}/api/shipment/track/${waybill}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
+    // ── LOAD ALL SHIPMENTS ──
+    async function loadShipments() {
+      const table = document.getElementById("shipmentTable");
+      const label = document.getElementById("countLabel");
+      table.innerHTML = `<tr class="loading-row"><td colspan="6">Loading shipments...</td></tr>`;
+      label.innerText = "Loading...";
+
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/shipment/all`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        if (!data.success) {
+          showToast("Failed to load shipments ❌", "#dc2626");
+          table.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:28px;color:#dc2626;">Failed to load.</td></tr>`;
+          return;
         }
-      );
 
-      const data = await res.json();
-      const timeline = document.getElementById("timeline");
+        allShipments = data.shipments || [];
+        filteredShipments = [...allShipments];
+        renderTable(filteredShipments);
 
-      timeline.innerHTML = "";
-
-      const scans =
-        data.tracking?.ShipmentData?.[0]?.Shipment?.Scans || [];
-
-      if (scans.length === 0) {
-        timeline.innerHTML = "<p>No updates yet.</p>";
-        return;
+      } catch(err) {
+        console.error(err);
+        showToast("Server Error ❌", "#dc2626");
+        table.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:28px;color:#dc2626;">Server unreachable.</td></tr>`;
       }
+    }
 
-      scans.forEach((scan) => {
-        timeline.innerHTML += `
-          <div class="event">
-            <b>${scan.ScanDetail?.Scan}</b><br/>
-            📍 ${scan.ScanDetail?.ScannedLocation}<br/>
-            🕒 ${scan.ScanDetail?.ScanDateTime}
-          </div>
+    // ── RENDER TABLE ──
+    function renderTable(shipments) {
+      const table = document.getElementById("shipmentTable");
+      const label = document.getElementById("countLabel");
+
+      label.innerText = shipments.length + " shipment" + (shipments.length !== 1 ? "s" : "");
+
+      if (!shipments.length) {
+        table.innerHTML = `
+          <tr><td colspan="6">
+            <div class="empty-state">
+              <div class="es-icon">📦</div>
+              <h3>No Shipments Found</h3>
+              <p>Try changing your search or filter.</p>
+            </div>
+          </td></tr>
         `;
-      });
-    } catch (err) {
-      alert("Tracking failed ❌");
-      console.log(err);
-    }
-  }
-
-  // ✅ Cancel Shipment
-  async function cancelShipment(id) {
-    if (!confirm("Cancel this shipment?")) return;
-
-    try {
-      const res = await fetch(
-        `${BACKEND_URL}/api/shipment/cancel/${id}`,
-        {
-          method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      const data = await res.json();
-
-      if (data.success) {
-        alert("Shipment Cancelled ✅");
-        loadShipments();
-      } else {
-        alert("Cancel Failed ❌");
+        return;
       }
-    } catch (err) {
-      alert("Server Error ❌");
-      console.log(err);
+
+      table.innerHTML = shipments.map((s, i) => `
+        <tr>
+          <td style="font-weight:700;">${s.waybill || "Not Assigned"}</td>
+          <td style="color:var(--muted);">${s.orderId || "N/A"}</td>
+          <td>${s.customerName || "N/A"}</td>
+          <td>${s.city || s.deliveryCity || "N/A"}</td>
+          <td>${statusBadge(s.status)}</td>
+          <td>
+            <div class="actions-cell">
+              <button class="btn btn-dark btn-sm" onclick="showDetails(${i})">Details</button>
+              <button class="btn btn-green btn-sm" onclick="openTrack(${i})">Track</button>
+              <button class="btn btn-red btn-sm" onclick="cancelShipment('${s._id}', ${i})">Cancel</button>
+            </div>
+          </td>
+        </tr>
+      `).join("");
     }
-  }
 
-  // ✅ Search + Filter
-  document
-    .getElementById("searchInput")
-    .addEventListener("input", filterData);
+    // ── SHOW DETAILS ──
+    function showDetails(index) {
+      currentShipment = filteredShipments[index];
+      const s = currentShipment;
 
-  document
-    .getElementById("statusFilter")
-    .addEventListener("change", filterData);
+      document.getElementById("popupTitle").innerText = "📦 Shipment Details";
+      document.getElementById("popupContent").innerHTML = `
+        <div class="detail-grid">
+          <div class="detail-item"><div class="di-label">Waybill</div><div class="di-val">${s.waybill || "Not Assigned"}</div></div>
+          <div class="detail-item"><div class="di-label">Order ID</div><div class="di-val">${s.orderId || "N/A"}</div></div>
+          <div class="detail-item"><div class="di-label">Customer</div><div class="di-val">${s.customerName || "N/A"}</div></div>
+          <div class="detail-item"><div class="di-label">City</div><div class="di-val">${s.city || s.deliveryCity || "N/A"}</div></div>
+          <div class="detail-item"><div class="di-label">Status</div><div class="di-val">${statusBadge(s.status)}</div></div>
+          <div class="detail-item"><div class="di-label">Payment Mode</div><div class="di-val">${s.paymentMode || "N/A"}</div></div>
+          <div class="detail-item"><div class="di-label">Weight</div><div class="di-val">${s.weight ? s.weight + " kg" : "N/A"}</div></div>
+          <div class="detail-item"><div class="di-label">Order Value</div><div class="di-val">${s.orderValue ? "₹" + s.orderValue : "N/A"}</div></div>
+        </div>
+        <div class="timeline-box" id="timelineBox">
+          <h4>📍 Tracking Timeline</h4>
+          <p style="color:var(--muted);font-size:13px;">Click "Track Live" to load live tracking updates.</p>
+        </div>
+      `;
 
-  function filterData() {
-    let search = document
-      .getElementById("searchInput")
-      .value.toLowerCase();
+      document.getElementById("trackBtn").onclick = () => trackShipment(s.waybill);
+      document.getElementById("popup").classList.add("show");
+    }
 
-    let status = document.getElementById("statusFilter").value;
+    // ── OPEN TRACK directly ──
+    function openTrack(index) {
+      showDetails(index);
+      const s = filteredShipments[index];
+      setTimeout(() => trackShipment(s.waybill), 100);
+    }
 
-    let filtered = allShipments.filter((s) => {
-      let matchSearch =
-        (s.orderId || "").toLowerCase().includes(search) ||
-        (s.waybill || "").toLowerCase().includes(search);
+    // ── TRACK SHIPMENT ──
+    async function trackShipment(waybill) {
+      if (!waybill || waybill === "Not Assigned") {
+        showToast("Waybill not assigned yet!", "#f97316");
+        return;
+      }
 
-      let matchStatus = status === "all" || s.status === status;
+      const timelineBox = document.getElementById("timelineBox");
+      if (timelineBox) timelineBox.innerHTML = `<h4>📍 Tracking Timeline</h4><p style="color:var(--muted);font-size:13px;">Loading live updates...</p>`;
 
-      return matchSearch && matchStatus;
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/shipment/track/${waybill}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        const scans = data.tracking?.ShipmentData?.[0]?.Shipment?.Scans || [];
+
+        if (!timelineBox) return;
+
+        if (!scans.length) {
+          timelineBox.innerHTML = `<h4>📍 Tracking Timeline</h4><p style="color:var(--muted);font-size:13px;">No tracking updates available yet.</p>`;
+          return;
+        }
+
+        timelineBox.innerHTML = `
+          <h4>📍 Tracking Timeline</h4>
+          ${scans.map(scan => `
+            <div class="event">
+              <div class="ev-dot"></div>
+              <div class="ev-body">
+                <b>${scan.ScanDetail?.Scan || "Update"}</b>
+                <small>📍 ${scan.ScanDetail?.ScannedLocation || ""} &nbsp;|&nbsp; 🕒 ${scan.ScanDetail?.ScanDateTime || ""}</small>
+              </div>
+            </div>
+          `).join("")}
+        `;
+      } catch(err) {
+        console.error(err);
+        showToast("Tracking failed ❌", "#dc2626");
+        const tb = document.getElementById("timelineBox");
+        if (tb) tb.innerHTML = `<h4>📍 Tracking Timeline</h4><p style="color:#dc2626;font-size:13px;">Failed to load tracking data.</p>`;
+      }
+    }
+
+    // ── CANCEL SHIPMENT ──
+    async function cancelShipment(id, index) {
+      const s = filteredShipments[index];
+      if ((s.status||"").toLowerCase() === "cancelled") {
+        showToast("Already cancelled", "#f97316");
+        return;
+      }
+      if (!confirm(`Cancel shipment ${s.waybill || s.orderId}?`)) return;
+
+      try {
+        // Try POST first, fallback to PUT (matches most backends)
+        const res = await fetch(`${BACKEND_URL}/api/shipment/cancel/${id}`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          showToast("✅ Shipment Cancelled");
+          loadShipments();
+        } else {
+          showToast("Cancel failed: " + (data.message || "Unknown error"), "#dc2626");
+        }
+      } catch(err) {
+        console.error(err);
+        showToast("Server Error ❌", "#dc2626");
+      }
+    }
+
+    // ── SEARCH + FILTER ──
+    function filterData() {
+      const search = document.getElementById("searchInput").value.toLowerCase();
+      const status = document.getElementById("statusFilter").value;
+
+      filteredShipments = allShipments.filter(s => {
+        const matchSearch =
+          (s.orderId || "").toLowerCase().includes(search) ||
+          (s.waybill || "").toLowerCase().includes(search) ||
+          (s.customerName || "").toLowerCase().includes(search);
+        const matchStatus = status === "all" || (s.status||"") === status;
+        return matchSearch && matchStatus;
+      });
+
+      renderTable(filteredShipments);
+    }
+
+    // ── EXPORT CSV ──
+    function exportCSV() {
+      if (!filteredShipments.length) { showToast("No data to export", "#f97316"); return; }
+
+      const headers = ["Waybill","Order ID","Customer","City","Status","Payment Mode","Weight","Order Value"];
+      const rows = filteredShipments.map(s => [
+        `"${s.waybill||""}"`,
+        `"${s.orderId||""}"`,
+        `"${s.customerName||""}"`,
+        `"${s.city||s.deliveryCity||""}"`,
+        `"${s.status||""}"`,
+        `"${s.paymentMode||""}"`,
+        `"${s.weight||""}"`,
+        `"${s.orderValue||""}"`
+      ]);
+
+      const csv  = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+      const blob = new Blob([csv], { type:"text/csv" });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement("a");
+      a.href     = url;
+      a.download = "shipments-" + new Date().toISOString().slice(0,10) + ".csv";
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("✅ CSV exported!");
+    }
+
+    function closePopup() {
+      document.getElementById("popup").classList.remove("show");
+      currentShipment = null;
+    }
+
+    // Close on overlay click
+    document.getElementById("popup").addEventListener("click", function(e) {
+      if (e.target === this) closePopup();
     });
 
-    renderTable(filtered);
-  }
+    function logout() {
+      localStorage.removeItem("adminToken");
+      window.location.href = "login.html";
+    }
 
-  function closePopup() {
-    document.getElementById("popup").style.display = "none";
-  }
-
-  function logout() {
-    localStorage.removeItem("adminToken");
-    window.location.href = "login.html";
-  }
-
-  // ✅ Auto Load
-  loadShipments();
-</script>
-
+    loadShipments();
+  </script>
 
 </body>
 </html>
