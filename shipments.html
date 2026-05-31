@@ -647,6 +647,18 @@
     </div>
   </div>
 
+  <!-- Refund Popup -->
+  <div class="popup-overlay" id="refundPopup">
+    <div class="popup-box" style="max-width: 480px;">
+      <h3>💰 Confirm Refund</h3>
+      <div id="refundPopupContent"></div>
+      <div class="popup-footer">
+        <button class="btn btn-ghost" style="flex:1" onclick="closeRefundPopup()">Cancel</button>
+        <button class="btn btn-orange" style="flex:1" id="confirmRefundBtn">Yes, Refund Now</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const BACKEND_URL = "https://nxtship-backend.onrender.com";
     const token = localStorage.getItem("adminToken");
@@ -859,10 +871,9 @@
     }
 
     // ── REFUND SHIPMENT (NEW LOGIC) ──
-    async function initiateRefund(id, index) {
+    // ── 1. OPEN REFUND POPUP (UI Dikhane ke liye) ──
+    function initiateRefund(id, index) {
       const s = filteredShipments[index];
-
-      // Charge nikal rahe hain (apne DB ke hisaab se variable adjust kar lena)
       const totalCharge = parseFloat(s.product?.orderValue || 0);
 
       if (isNaN(totalCharge) || totalCharge <= 0) {
@@ -873,17 +884,34 @@
       // 80% calculate karna
       const refundAmount = (totalCharge * 0.80).toFixed(2);
 
-      // Confirmation popup
-      const isConfirmed = confirm(
-        `Total charge deducted was ₹${totalCharge}.\n\n` + 
-        `80% of it (₹${refundAmount}) will be refunded.\n\n` + 
-        `Do you want to proceed with this refund for ${s.waybill || s.orderId}?`
-      );
+      // Popup ke andar details inject karna
+      document.getElementById("refundPopupContent").innerHTML = `
+        <div style="margin-bottom: 20px;">
+          <p style="font-size: 15px; color: #444; margin-bottom: 8px;">Total charge deducted: <b>₹${totalCharge}</b></p>
+          <p style="font-size: 15px; color: #16a34a; margin-bottom: 16px;">Amount to be refunded (80%): <b style="font-size: 18px;">₹${refundAmount}</b></p>
+        </div>
+        <div class="detail-item" style="background:#fef3c7; color:#b45309;">
+          <div class="di-val" style="font-size:13px; font-weight:500;">
+            Are you sure you want to proceed with this refund for Order <b>${s.orderId || s.waybill}</b>?
+          </div>
+        </div>
+      `;
 
-      if (!isConfirmed) return;
+      // Confirm button click par API call wala function chalana
+      document.getElementById("confirmRefundBtn").onclick = () => processRefundApiCall(id, refundAmount);
+
+      // Popup show karna (alert hat gaya!)
+      document.getElementById("refundPopup").classList.add("show");
+    }
+
+    // ── 2. PROCESS REFUND (Backend API Call) ──
+    async function processRefundApiCall(id, refundAmount) {
+      // Button ko loading state me dikhana (optional but good practice)
+      const btn = document.getElementById("confirmRefundBtn");
+      btn.innerText = "Processing...";
+      btn.disabled = true;
 
       try {
-        // Backend API ko request bhej rahe hain
         const res = await fetch(`${BACKEND_URL}/api/shipment/refund/${id}`, {
           method: "POST",
           headers: { 
@@ -897,15 +925,29 @@
 
         if (data.success) {
           showToast(`✅ Refund of ₹${refundAmount} initiated!`, "#16a34a");
-          loadShipments(); // Table update karne ke liye
+          closeRefundPopup(); // Refund hone ke baad popup band karna
+          loadShipments(); 
         } else {
           showToast("Refund failed: " + (data.message || "Unknown error"), "#dc2626");
         }
       } catch(err) {
         console.error(err);
         showToast("Server Error ❌", "#dc2626");
+      } finally {
+        btn.innerText = "Yes, Refund Now";
+        btn.disabled = false;
       }
     }
+
+    // ── 3. CLOSE REFUND POPUP ──
+    function closeRefundPopup() {
+      document.getElementById("refundPopup").classList.remove("show");
+    }
+
+    // Overlay par click karne par Refund popup band karne ke liye (Sabse end me jahan popup overlay ka event listener hai)
+    document.getElementById("refundPopup").addEventListener("click", function (e) {
+      if (e.target === this) closeRefundPopup();
+    });
 
     // ── SEARCH + FILTER ──
     function filterData() {
