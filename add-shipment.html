@@ -1,232 +1,1165 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <title>Add Shipment - NXTShip Admin</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Add Shipment — NXT Ship Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
+    :root {
+      --sidebar-w: 260px;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-light: #eff6ff;
+      --success: #16a34a;
+      --success-light: #dcfce7;
+      --warning: #f59e0b;
+      --danger: #dc2626;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+      --radius: 14px;
+      --shadow: 0 2px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.05);
+      --shadow-lg: 0 20px 60px rgba(0,0,0,0.18);
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+
     body {
-      margin: 0;
-      font-family: "Segoe UI", sans-serif;
-      background: #f5f7fb;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
       display: flex;
+      min-height: 100vh;
     }
 
-    /* Sidebar */
+    /* ══════════════ SIDEBAR ══════════════ */
     .sidebar {
-      width: 250px;
+      width: var(--sidebar-w);
       height: 100vh;
-      background: linear-gradient(to bottom, #0f172a, #1e293b);
+      background: linear-gradient(160deg, #0f172a 0%, #1e293b 100%);
       color: white;
-      padding: 25px;
-      position: fixed;
-      top: 0;
-      left: 0;
+      position: fixed; top:0; left:0;
+      display: flex; flex-direction: column;
+      z-index: 100;
     }
-
-    .sidebar h2 {
-      font-size: 22px;
-      margin-bottom: 40px;
-      font-weight: bold;
+    .sidebar-logo {
+      padding: 28px 22px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
     }
-
-    .menu a {
-      display: block;
-      padding: 12px;
-      margin-bottom: 10px;
-      border-radius: 10px;
-      color: white;
-      text-decoration: none;
-      font-size: 16px;
-      transition: 0.3s;
+    .sidebar-logo h2 { font-size:19px; font-weight:800; letter-spacing:-0.3px; }
+    .sidebar-logo p  { font-size:11px; color:rgba(255,255,255,0.35); margin-top:3px; }
+    .sidebar-nav { padding:12px 10px; flex:1; }
+    .sidebar-nav a {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 14px; margin-bottom: 3px; border-radius: 10px;
+      color: rgba(255,255,255,0.7); text-decoration: none;
+      font-size: 14px; font-weight: 500; transition: 0.18s;
     }
-
-    .menu a:hover,
-    .menu a.active {
-      background: rgba(255, 255, 255, 0.15);
+    .sidebar-nav a:hover { background: rgba(255,255,255,0.08); color: white; }
+    .sidebar-nav a.active { background: rgba(37,99,235,0.35); color: #93c5fd; }
+    .sidebar-bottom {
+      padding: 12px 10px;
+      border-top: 1px solid rgba(255,255,255,0.07);
     }
+    .sidebar-bottom a {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-radius: 10px;
+      color: rgba(255,255,255,0.5); text-decoration: none;
+      font-size: 14px; font-weight: 500; cursor: pointer; transition: 0.18s;
+    }
+    .sidebar-bottom a:hover { background: rgba(220,38,38,0.15); color: #fca5a5; }
 
-    /* Main Content */
+    /* ══════════════ MAIN ══════════════ */
     .main {
-      margin-left: 280px;
-      padding: 30px;
+      margin-left: var(--sidebar-w);
       width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
-    h1 {
-      font-size: 26px;
-      margin-bottom: 20px;
-    }
-
-    .form-box {
+    /* ══════════════ TOPBAR ══════════════ */
+    .topbar {
       background: white;
-      padding: 25px;
-      border-radius: 18px;
-      width: 500px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      padding: 14px 28px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 50;
+    }
+    .topbar h1 { font-size: 18px; font-weight: 700; }
+    .admin-badge {
+      background: var(--primary-light); color: var(--primary);
+      padding: 6px 14px; border-radius: 20px;
+      font-size: 13px; font-weight: 600;
     }
 
-    input,
-    select {
+    /* ══════════════ PAGE BODY ══════════════ */
+    .page-body {
+      padding: 28px;
+      flex: 1;
+      max-width: 860px;
       width: 100%;
-      padding: 12px;
-      margin: 8px 0;
-      border-radius: 10px;
-      border: 1px solid #ddd;
+      margin: 0 auto;
+    }
+
+    /* ══════════════ STEPPER ══════════════ */
+    .stepper {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 32px;
+      background: white;
+      border-radius: var(--radius);
+      padding: 20px 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      position: relative;
+    }
+
+    .step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      right: 0; top: 50%;
+      transform: translateY(-50%);
+      width: calc(100% - 120px);
+      left: 120px;
+      height: 2px;
+      background: var(--border);
+      transition: background 0.3s;
+      z-index: 0;
+    }
+
+    .step.done:not(:last-child)::after { background: var(--primary); }
+
+    .step-num {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700;
+      background: #f1f5f9; color: var(--muted);
+      border: 2px solid var(--border);
+      transition: all 0.3s;
+      flex-shrink: 0;
+      z-index: 1;
+    }
+    .step.active .step-num {
+      background: var(--primary); color: white;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(37,99,235,0.15);
+    }
+    .step.done .step-num {
+      background: var(--success); color: white;
+      border-color: var(--success);
+    }
+
+    .step-info { z-index: 1; }
+    .step-label {
+      font-size: 13px; font-weight: 700;
+      color: var(--muted);
+      transition: color 0.3s;
+    }
+    .step.active .step-label { color: var(--primary); }
+    .step.done .step-label  { color: var(--success); }
+    .step-sub { font-size: 11px; color: #94a3b8; margin-top: 1px; }
+
+    /* ══════════════ FORM SECTIONS ══════════════ */
+    .form-step {
+      display: none;
+      animation: fadeUp 0.25s ease;
+    }
+    .form-step.active { display: block; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 26px 28px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+    .form-card-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 22px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .form-card-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: var(--primary-light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .form-card-header h3 { font-size: 16px; font-weight: 700; }
+    .form-card-header p  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    /* ── FIELD GROUPS ── */
+    .field-grid { display: grid; gap: 14px; }
+    .field-grid.col2 { grid-template-columns: 1fr 1fr; }
+    .field-grid.col3 { grid-template-columns: 1fr 1fr 1fr; }
+
+    .field-group { display: flex; flex-direction: column; gap: 5px; }
+    .field-group label {
+      font-size: 12px; font-weight: 700;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px;
+    }
+    .field-group label span.req { color: var(--danger); margin-left: 2px; }
+
+    .field-group input,
+    .field-group select,
+    .field-group textarea {
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
       font-size: 14px;
+      font-family: inherit;
+      color: var(--text);
+      background: #fafbfc;
       outline: none;
-    }
-
-    button {
+      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
       width: 100%;
-      padding: 14px;
-      background: #2563eb;
-      color: white;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      font-size: 16px;
-      margin-top: 15px;
-      font-weight: bold;
+    }
+    .field-group input:focus,
+    .field-group select:focus,
+    .field-group textarea:focus {
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+    .field-group input.error { border-color: var(--danger); }
+    .field-group .hint {
+      font-size: 11px; color: var(--muted); margin-top: 2px;
+    }
+    .field-group .err-msg {
+      font-size: 11px; color: var(--danger); margin-top: 2px; display: none;
     }
 
-    button:hover {
-      background: #1d4ed8;
+    /* ── WAREHOUSE SELECT ── */
+    .warehouse-picker {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: flex-start;
     }
 
-    #msg {
-      margin-top: 15px;
-      font-weight: bold;
+    /* ── ORDER ID BADGE ── */
+    .order-id-box {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .order-id-box input { flex:1; font-family: 'Courier New', monospace; font-size: 13px; font-weight:700; color: var(--primary); }
+    .regen-btn {
+      padding: 11px 14px; border-radius: 9px;
+      background: var(--primary-light); border: 1.5px solid #bfdbfe;
+      color: var(--primary); font-size: 13px; font-weight: 700;
+      cursor: pointer; white-space: nowrap; flex-shrink: 0;
+      transition: 0.15s;
+    }
+    .regen-btn:hover { background: #dbeafe; }
+
+    /* ── PAYMENT TOGGLE ── */
+    .payment-toggle { display: flex; gap: 10px; }
+    .pay-opt {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
       text-align: center;
+      cursor: pointer;
+      transition: all 0.18s;
+      font-size: 13px; font-weight: 600;
+      color: var(--muted);
+      background: #fafbfc;
+    }
+    .pay-opt:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+    .pay-opt.selected { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+    .pay-opt .pay-icon { font-size: 20px; display: block; margin-bottom: 4px; }
+
+    /* ── STEP ACTIONS ── */
+    .step-actions {
+      display: flex; gap: 12px; justify-content: flex-end;
+      margin-top: 6px;
+    }
+    .btn {
+      padding: 12px 24px; border: none; border-radius: 9px;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      font-family: inherit; transition: all 0.15s;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(37,99,235,0.3); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-ghost { background: white; color: var(--text); border: 1.5px solid var(--border); }
+    .btn-ghost:hover { background: #f1f5f9; }
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover { background: #15803d; transform: translateY(-1px); }
+    .btn-sm { padding: 8px 14px; font-size: 12px; border-radius: 7px; }
+
+    /* ══════════════ REVIEW CARD ══════════════ */
+    .review-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .review-section {
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 16px 18px;
+      border: 1px solid var(--border);
+    }
+    .review-section h4 {
+      font-size: 11px; font-weight: 700;
+      color: var(--muted); text-transform: uppercase;
+      letter-spacing: 0.5px; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .review-row {
+      display: flex; justify-content: space-between;
+      padding: 5px 0; font-size: 13px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .review-row:last-child { border: none; }
+    .review-row .rr-label { color: var(--muted); }
+    .review-row .rr-val   { font-weight: 600; text-align: right; max-width: 55%; word-break: break-word; }
+
+    /* ══════════════ COURIER POPUP ══════════════ */
+    .overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 998;
+      backdrop-filter: blur(2px);
+    }
+    .overlay.show { display: flex; align-items: center; justify-content: center; padding: 20px; }
+
+    .courier-popup {
+      background: white;
+      border-radius: 20px;
+      width: 100%; max-width: 520px;
+      max-height: 88vh;
+      overflow: hidden;
+      display: flex; flex-direction: column;
+      box-shadow: var(--shadow-lg);
+      animation: popIn 0.28s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes popIn {
+      from { opacity:0; transform: scale(0.9) translateY(20px); }
+      to   { opacity:1; transform: scale(1) translateY(0); }
+    }
+
+    .popup-header {
+      padding: 22px 24px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: flex-start;
+    }
+    .popup-header h3 { font-size: 17px; font-weight: 800; }
+    .popup-header p  { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .popup-close {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: #f1f5f9; border: none; cursor: pointer;
+      font-size: 16px; display: flex; align-items: center;
+      justify-content: center; color: var(--muted); transition: 0.15s;
+      flex-shrink: 0;
+    }
+    .popup-close:hover { background: #e2e8f0; color: var(--text); }
+
+    .popup-body { padding: 16px 20px; overflow-y: auto; flex: 1; }
+    .popup-loading {
+      text-align: center; padding: 40px 20px;
+      color: var(--muted);
+    }
+    .popup-loading .spin {
+      width: 36px; height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 14px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── COURIER OPTION CARD ── */
+    .courier-option {
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.18s;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 12px;
+    }
+    .courier-option:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      transform: translateY(-1px);
+    }
+    .courier-option.selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    .courier-option .co-left h4 { font-size: 14px; font-weight: 700; }
+    .courier-option .co-left p  { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .courier-option .co-right {
+      text-align: right; flex-shrink: 0;
+    }
+    .courier-option .co-price {
+      font-size: 20px; font-weight: 800; color: var(--primary);
+    }
+    .courier-option .co-days {
+      font-size: 11px; color: var(--muted); margin-top: 2px;
+    }
+    .courier-option .best-badge {
+      background: #fef3c7; color: #b45309;
+      font-size: 10px; font-weight: 700;
+      padding: 2px 8px; border-radius: 20px;
+      display: inline-block; margin-bottom: 4px;
+    }
+    .co-select-btn {
+      padding: 9px 18px; border-radius: 8px;
+      background: var(--primary); color: white;
+      border: none; font-size: 13px; font-weight: 700;
+      cursor: pointer; transition: 0.15s;
+      font-family: inherit;
+    }
+    .co-select-btn:hover { background: var(--primary-dark); }
+
+    .popup-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+      display: flex; gap: 10px;
+    }
+
+    /* ══════════════ SUCCESS SCREEN ══════════════ */
+    .success-screen {
+      display: none;
+      text-align: center;
+      padding: 50px 30px;
+      animation: fadeUp 0.4s ease;
+    }
+    .success-screen.show { display: block; }
+
+    .success-checkmark {
+      width: 72px; height: 72px;
+      background: var(--success-light);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 20px;
+      border: 3px solid #86efac;
+      animation: popIn 0.4s cubic-bezier(.34,1.56,.64,1);
+    }
+    .success-screen h2 { font-size: 22px; font-weight: 800; color: var(--success); margin-bottom: 8px; }
+    .success-screen p  { font-size: 14px; color: var(--muted); }
+
+    .success-details {
+      display: inline-grid;
+      grid-template-columns: auto auto;
+      gap: 10px 24px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 28px;
+      margin: 20px auto;
+      text-align: left;
+    }
+    .success-details .sd-label { font-size: 12px; color: var(--muted); font-weight: 600; }
+    .success-details .sd-val   { font-size: 14px; font-weight: 700; }
+    .success-details .awb-val  { font-size: 18px; font-weight: 800; color: var(--primary); }
+    .success-actions { display: flex; gap: 12px; justify-content: center; margin-top: 6px; flex-wrap: wrap; }
+
+    /* ══════════════ TOAST ══════════════ */
+    .toast {
+      position: fixed; top: 20px; right: 20px; z-index: 9999;
+      background: white; padding: 14px 18px; border-radius: 12px;
+      font-size: 13px; font-weight: 600;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      animation: slideIn 0.3s ease;
+      border-left: 4px solid var(--primary);
+      max-width: 300px;
+    }
+    @keyframes slideIn { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:translateX(0)} }
+
+    /* ══════════════ RESPONSIVE ══════════════ */
+    @media(max-width: 860px) {
+      .field-grid.col2,
+      .field-grid.col3 { grid-template-columns: 1fr; }
+      .review-grid { grid-template-columns: 1fr; }
+      .page-body { padding: 16px; }
+      .stepper { padding: 16px; gap: 4px; }
+      .step-label { font-size: 11px; }
+      .step-sub { display: none; }
     }
   </style>
 </head>
-
 <body>
 
   <!-- Sidebar -->
   <div class="sidebar">
-    <h2>🚚 Courier Admin</h2>
-    <div class="menu">
+    <div class="sidebar-logo">
+      <h2>🚚 NXT Ship</h2>
+      <p>Admin Panel</p>
+    </div>
+    <nav class="sidebar-nav">
       <a href="dashboard.html">📊 Dashboard</a>
-      <a href="add-shipment.html" class="active">📑 Add Shipment</a>
+      <a href="add-shipment.html" class="active">➕ Add Shipment</a>
       <a href="shipments.html">📦 View Shipments</a>
       <a href="customers.html">👤 Customers</a>
-
-      <a href="#" onclick="logout()">🚪 Logout</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <a onclick="logout()">🚪 Logout</a>
     </div>
   </div>
 
   <!-- Main -->
   <div class="main">
-    <h1>➕ Create Shipment</h1>
 
-    <div class="form-box">
+    <!-- Topbar -->
+    <div class="topbar">
+      <h1>➕ Create Shipment</h1>
+      <div class="admin-badge">Admin 👋</div>
+    </div>
 
-      <input id="customerName" placeholder="Customer Name">
-      <input id="phone" placeholder="Customer Phone Number">
-      <input id="address" placeholder="Delivery Address">
-      <input id="city" placeholder="City">
-      <input id="state" placeholder="State">
-      <input id="pincode" placeholder="Pincode">
-      <input id="orderId" placeholder="Order ID">
+    <!-- Page Body -->
+    <div class="page-body">
 
-      <select id="paymentMode">
-        <option value="Prepaid">Prepaid</option>
-        <option value="COD">Cash On Delivery</option>
-      </select>
+      <!-- Stepper -->
+      <div class="stepper" id="stepper">
+        <div class="step active" id="step-dot-1">
+          <div class="step-num">1</div>
+          <div class="step-info">
+            <div class="step-label">Receiver</div>
+            <div class="step-sub">Customer details</div>
+          </div>
+        </div>
+        <div class="step" id="step-dot-2">
+          <div class="step-num">2</div>
+          <div class="step-info">
+            <div class="step-label">Package</div>
+            <div class="step-sub">Weight & size</div>
+          </div>
+        </div>
+        <div class="step" id="step-dot-3">
+          <div class="step-num">3</div>
+          <div class="step-info">
+            <div class="step-label">Review</div>
+            <div class="step-sub">Confirm & book</div>
+          </div>
+        </div>
+      </div>
 
-      <input id="orderValue" placeholder="Order Value ₹">
-      <input id="weight" placeholder="Weight (kg)">
+      <!-- ── STEP 1: Receiver Details ── -->
+      <div class="form-step active" id="formStep1">
+        <div class="form-card">
+          <div class="form-card-header">
+            <div class="form-card-icon">👤</div>
+            <div>
+              <h3>Receiver Details</h3>
+              <p>Where should this shipment be delivered?</p>
+            </div>
+          </div>
 
-      <button onclick="createShipment()">🚀 Book Shipment</button>
+          <div class="field-grid" style="margin-bottom:16px;">
+            <div class="field-grid col2">
+              <div class="field-group">
+                <label>Full Name <span class="req">*</span></label>
+                <input id="receiverName" placeholder="e.g. Rahul Sharma" autocomplete="off"/>
+                <span class="err-msg" id="err-receiverName">Name is required</span>
+              </div>
+              <div class="field-group">
+                <label>Phone Number <span class="req">*</span></label>
+                <input id="receiverPhone" placeholder="10-digit mobile" maxlength="10" type="tel"/>
+                <span class="err-msg" id="err-receiverPhone">Valid phone required</span>
+              </div>
+            </div>
+          </div>
 
-      <p id="msg"></p>
+          <div class="field-grid" style="margin-bottom:16px;">
+            <div class="field-group">
+              <label>Delivery Address <span class="req">*</span></label>
+              <textarea id="receiverAddress" placeholder="House no., Street, Area..." rows="2" style="resize:vertical;"></textarea>
+              <span class="err-msg" id="err-receiverAddress">Address is required</span>
+            </div>
+          </div>
+
+          <div class="field-grid col3" style="margin-bottom:16px;">
+            <div class="field-group">
+              <label>Pincode <span class="req">*</span></label>
+              <input id="toPincode" placeholder="e.g. 110001" maxlength="6" type="tel"/>
+              <span class="err-msg" id="err-toPincode">6-digit pincode required</span>
+            </div>
+            <div class="field-group">
+              <label>City <span class="req">*</span></label>
+              <input id="receiverCity" placeholder="City"/>
+              <span class="err-msg" id="err-receiverCity">City is required</span>
+            </div>
+            <div class="field-group">
+              <label>State</label>
+              <input id="receiverState" placeholder="State"/>
+            </div>
+          </div>
+
+          <div class="field-grid col2">
+            <div class="field-group">
+              <label>Pickup Warehouse <span class="req">*</span></label>
+              <div class="warehouse-picker">
+                <select id="warehouseSelect">
+                  <option value="">Loading warehouses...</option>
+                </select>
+              </div>
+              <span class="err-msg" id="err-warehouseSelect">Select a warehouse</span>
+            </div>
+            <div class="field-group">
+              <label>Order ID</label>
+              <div class="order-id-box">
+                <input id="orderId" readonly/>
+                <button class="regen-btn" onclick="regenOrderId()" title="Generate new ID">↻</button>
+              </div>
+              <span class="hint">Auto-generated — click ↻ to regenerate</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-actions">
+          <button class="btn btn-primary" onclick="goStep(2)">
+            Next: Package Details →
+          </button>
+        </div>
+      </div>
+
+      <!-- ── STEP 2: Package Details ── -->
+      <div class="form-step" id="formStep2">
+        <div class="form-card">
+          <div class="form-card-header">
+            <div class="form-card-icon">📦</div>
+            <div>
+              <h3>Package Details</h3>
+              <p>Product info, dimensions and payment method</p>
+            </div>
+          </div>
+
+          <div class="field-grid" style="margin-bottom:16px;">
+            <div class="field-group">
+              <label>Product Name <span class="req">*</span></label>
+              <input id="productName" placeholder="e.g. Mobile Cover, T-Shirt, Shoes"/>
+              <span class="err-msg" id="err-productName">Product name is required</span>
+            </div>
+          </div>
+
+          <div class="field-grid col2" style="margin-bottom:16px;">
+            <div class="field-group">
+              <label>Weight (kg) <span class="req">*</span></label>
+              <input id="weight" type="number" step="0.1" min="0.1" placeholder="e.g. 0.5"/>
+              <span class="err-msg" id="err-weight">Weight is required</span>
+            </div>
+            <div class="field-group">
+              <label>Order Value (₹) <span class="req">*</span></label>
+              <input id="orderValue" type="number" placeholder="e.g. 499"/>
+              <span class="err-msg" id="err-orderValue">Order value is required</span>
+            </div>
+          </div>
+
+          <div class="field-grid col3" style="margin-bottom:22px;">
+            <div class="field-group">
+              <label>Length (cm)</label>
+              <input id="length" type="number" placeholder="20"/>
+            </div>
+            <div class="field-group">
+              <label>Breadth (cm)</label>
+              <input id="breadth" type="number" placeholder="15"/>
+            </div>
+            <div class="field-group">
+              <label>Height (cm)</label>
+              <input id="height" type="number" placeholder="10"/>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>Payment Method <span class="req">*</span></label>
+            <div class="payment-toggle" style="margin-top:4px;">
+              <div class="pay-opt selected" id="pay-prepaid" onclick="selectPayment('Pre-paid')">
+                <span class="pay-icon">💳</span>
+                Pre-paid
+              </div>
+              <div class="pay-opt" id="pay-cod" onclick="selectPayment('COD')">
+                <span class="pay-icon">💵</span>
+                Cash on Delivery
+              </div>
+            </div>
+            <input type="hidden" id="paymentType" value="Pre-paid"/>
+          </div>
+        </div>
+
+        <div class="step-actions">
+          <button class="btn btn-ghost" onclick="goStep(1)">← Back</button>
+          <button class="btn btn-primary" onclick="goStep(3)">Review Order →</button>
+        </div>
+      </div>
+
+      <!-- ── STEP 3: Review & Confirm ── -->
+      <div class="form-step" id="formStep3">
+        <div class="form-card">
+          <div class="form-card-header">
+            <div class="form-card-icon">✅</div>
+            <div>
+              <h3>Review Order</h3>
+              <p>Confirm everything looks correct before booking</p>
+            </div>
+          </div>
+
+          <div class="review-grid" id="reviewContent">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <div class="step-actions">
+          <button class="btn btn-ghost" onclick="goStep(2)">← Edit</button>
+          <button class="btn btn-success" onclick="fetchCourierRates()" id="bookBtn">
+            🚀 Get Courier Rates &amp; Book
+          </button>
+        </div>
+      </div>
+
+      <!-- ── SUCCESS SCREEN ── -->
+      <div class="success-screen" id="successScreen">
+        <div class="success-checkmark">🎉</div>
+        <h2>Shipment Booked!</h2>
+        <p>Your shipment has been successfully created and dispatched.</p>
+
+        <div class="success-details" id="successDetails">
+          <!-- filled dynamically -->
+        </div>
+
+        <div class="success-actions">
+          <button class="btn btn-ghost" onclick="resetForm()">➕ New Shipment</button>
+          <button class="btn btn-primary" onclick="window.location.href='shipments.html'">📦 View All Shipments</button>
+        </div>
+      </div>
 
     </div>
   </div>
 
+  <!-- Courier Selection Overlay -->
+  <div class="overlay" id="courierOverlay">
+    <div class="courier-popup">
+      <div class="popup-header">
+        <div>
+          <h3>🚚 Select Courier Partner</h3>
+          <p id="popupSubtext">Choose the best option for your shipment</p>
+        </div>
+        <button class="popup-close" onclick="closeCourierPopup()">✕</button>
+      </div>
+      <div class="popup-body" id="courierListContainer">
+        <div class="popup-loading">
+          <div class="spin"></div>
+          <p>Fetching best rates...</p>
+        </div>
+      </div>
+      <div class="popup-footer">
+        <button class="btn btn-ghost" style="flex:1" onclick="closeCourierPopup()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    const API_URL = "https://nxtship-backend.onrender.com/api/shipment/book";
+    /* ════════════════════════════════════
+       CONFIG
+    ════════════════════════════════════ */
+    const BASE_URL = "https://nxtship-backend.onrender.com";
+    const token = localStorage.getItem("adminToken") || localStorage.getItem("customerToken");
 
-    window.onload = function () {
+    if (!token) { window.location.href = "login.html"; }
 
-      const orderId = document.getElementById("orderId");
+    let currentStep = 1;
+    let selectedPayment = "Pre-paid";
+    let shipfastCouriers = [];
+    let ratePayload = {};
+    let shipmentPayload = {};
 
-      if (orderId) {
-        orderId.value = "ORD" + Math.floor(100000 + Math.random() * 900000);
+    /* ── HELPERS ── */
+    function $(id) { return document.getElementById(id); }
+    function getVal(id) { const el = $(id); return el ? el.value.trim() : ""; }
+
+    function showToast(msg, color="#2563eb") {
+      document.querySelectorAll(".toast").forEach(t => t.remove());
+      const el = document.createElement("div");
+      el.className = "toast";
+      el.style.borderLeftColor = color;
+      el.innerText = msg;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 4000);
+    }
+
+    /* ── ORDER ID ── */
+    function regenOrderId() {
+      $("orderId").value = "ORD-" + Date.now().toString().slice(-7) + Math.random().toString(36).slice(2,5).toUpperCase();
+    }
+
+    /* ── PAYMENT TOGGLE ── */
+    function selectPayment(type) {
+      selectedPayment = type;
+      $("paymentType").value = type;
+      $("pay-prepaid").classList.toggle("selected", type === "Pre-paid");
+      $("pay-cod").classList.toggle("selected", type === "COD");
+    }
+
+    /* ── LOAD WAREHOUSES ── */
+    async function loadWarehouses() {
+      const dropdown = $("warehouseSelect");
+      try {
+        const res = await fetch(`${BASE_URL}/api/warehouse`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        dropdown.innerHTML = `<option value="">Select Warehouse</option>`;
+        if (!data.warehouses?.length) {
+          dropdown.innerHTML += `<option value="" disabled>No warehouses — add one first</option>`;
+          return;
+        }
+        data.warehouses.forEach(w => {
+          dropdown.innerHTML += `<option value="${w._id}" data-pincode="${w.pincode}">${w.name} (${w.pincode})</option>`;
+        });
+      } catch(e) {
+        dropdown.innerHTML = `<option value="">Failed to load warehouses</option>`;
       }
-    };
+    }
 
-    async function createShipment() {
+    /* ══════════════════════════════════════
+       STEP NAVIGATION
+    ══════════════════════════════════════ */
+    function goStep(n) {
+      if (n > currentStep) {
+        // Validate current step before moving forward
+        if (currentStep === 1 && !validateStep1()) return;
+        if (currentStep === 2 && !validateStep2()) return;
+      }
 
-      const token = localStorage.getItem("adminToken");
+      // Update UI
+      document.querySelectorAll(".form-step").forEach(el => el.classList.remove("active"));
+      $("formStep" + n).classList.add("active");
 
-      if (!token) {
-        alert("Session expired! Please login again.");
-        window.location.href = "login.html";
+      // Update stepper dots
+      for (let i = 1; i <= 3; i++) {
+        const dot = $("step-dot-" + i);
+        dot.classList.remove("active", "done");
+        if (i < n) dot.classList.add("done");
+        else if (i === n) dot.classList.add("active");
+      }
+
+      if (n === 3) buildReview();
+      currentStep = n;
+    }
+
+    /* ── VALIDATION ── */
+    function clearErrors() {
+      document.querySelectorAll(".err-msg").forEach(el => el.style.display = "none");
+      document.querySelectorAll("input.error, select.error, textarea.error").forEach(el => el.classList.remove("error"));
+    }
+
+    function showError(fieldId, msgId) {
+      const field = $(fieldId);
+      const msg   = $(msgId);
+      if (field) field.classList.add("error");
+      if (msg)   msg.style.display = "block";
+    }
+
+    function validateStep1() {
+      clearErrors();
+      let ok = true;
+      if (!getVal("receiverName"))   { showError("receiverName","err-receiverName"); ok=false; }
+      const ph = getVal("receiverPhone");
+      if (!ph || ph.length < 10)     { showError("receiverPhone","err-receiverPhone"); ok=false; }
+      if (!getVal("receiverAddress")){ showError("receiverAddress","err-receiverAddress"); ok=false; }
+      const pin = getVal("toPincode");
+      if (!pin || pin.length !== 6)  { showError("toPincode","err-toPincode"); ok=false; }
+      if (!getVal("receiverCity"))   { showError("receiverCity","err-receiverCity"); ok=false; }
+      if (!getVal("warehouseSelect")){ showError("warehouseSelect","err-warehouseSelect"); ok=false; }
+      if (!ok) { showToast("Please fix the highlighted fields", "#dc2626"); }
+      return ok;
+    }
+
+    function validateStep2() {
+      clearErrors();
+      let ok = true;
+      if (!getVal("productName")) { showError("productName","err-productName"); ok=false; }
+      if (!getVal("weight"))      { showError("weight","err-weight"); ok=false; }
+      if (!getVal("orderValue"))  { showError("orderValue","err-orderValue"); ok=false; }
+      if (!ok) { showToast("Please fix the highlighted fields", "#dc2626"); }
+      return ok;
+    }
+
+    /* ── BUILD REVIEW ── */
+    function buildReview() {
+      const w = $("warehouseSelect");
+      const warehouseName = w.options[w.selectedIndex]?.text || "—";
+
+      $("reviewContent").innerHTML = `
+        <div class="review-section">
+          <h4>👤 Receiver Info</h4>
+          <div class="review-row"><span class="rr-label">Name</span><span class="rr-val">${getVal("receiverName")||"—"}</span></div>
+          <div class="review-row"><span class="rr-label">Phone</span><span class="rr-val">${getVal("receiverPhone")||"—"}</span></div>
+          <div class="review-row"><span class="rr-label">Address</span><span class="rr-val">${getVal("receiverAddress")||"—"}</span></div>
+          <div class="review-row"><span class="rr-label">City</span><span class="rr-val">${getVal("receiverCity")||"—"}, ${getVal("receiverState")||""}</span></div>
+          <div class="review-row"><span class="rr-label">Pincode</span><span class="rr-val">${getVal("toPincode")||"—"}</span></div>
+        </div>
+        <div class="review-section">
+          <h4>📦 Package Info</h4>
+          <div class="review-row"><span class="rr-label">Product</span><span class="rr-val">${getVal("productName")||"—"}</span></div>
+          <div class="review-row"><span class="rr-label">Weight</span><span class="rr-val">${getVal("weight")||"—"} kg</span></div>
+          <div class="review-row"><span class="rr-label">Dimensions</span><span class="rr-val">${getVal("length")||"—"} × ${getVal("breadth")||"—"} × ${getVal("height")||"—"} cm</span></div>
+          <div class="review-row"><span class="rr-label">Order Value</span><span class="rr-val">₹${getVal("orderValue")||"—"}</span></div>
+          <div class="review-row"><span class="rr-label">Payment</span><span class="rr-val">${selectedPayment}</span></div>
+          <div class="review-row"><span class="rr-label">Warehouse</span><span class="rr-val">${warehouseName}</span></div>
+          <div class="review-row"><span class="rr-label">Order ID</span><span class="rr-val" style="color:var(--primary);font-family:monospace;">${getVal("orderId")||"—"}</span></div>
+        </div>
+      `;
+    }
+
+    /* ══════════════════════════════════════
+       FETCH COURIER RATES → OPEN POPUP
+    ══════════════════════════════════════ */
+    async function fetchCourierRates() {
+      const btn = $("bookBtn");
+      btn.disabled = true;
+      btn.innerHTML = `<span style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;"></span> Fetching rates...`;
+
+      const warehouseDrop = $("warehouseSelect");
+      const selectedOption = warehouseDrop.options[warehouseDrop.selectedIndex];
+      const warehouseId  = selectedOption.value;
+      const fromPincode  = selectedOption.getAttribute("data-pincode");
+
+      ratePayload = {
+        fromPincode,
+        toPincode:   getVal("toPincode"),
+        weight:      getVal("weight") || "0.5",
+        paymentType: selectedPayment
+      };
+
+      shipmentPayload = {
+        customerName: getVal("receiverName"),
+        address:      getVal("receiverAddress"),
+        pincode:      getVal("toPincode"),
+        city:         getVal("receiverCity"),
+        state:        getVal("receiverState"),
+        phone:        getVal("receiverPhone"),
+        productName:  getVal("productName") || "General Item",
+        weight:       getVal("weight") || "0.5",
+        length:       getVal("length") || "10",
+        breadth:      getVal("breadth") || "10",
+        height:       getVal("height") || "10",
+        orderValue:   getVal("orderValue") || 0,
+        paymentMode:  selectedPayment,
+        orderId:      getVal("orderId"),
+        warehouseId
+      };
+
+      // Open popup with loading state
+      $("courierOverlay").classList.add("show");
+      $("courierListContainer").innerHTML = `
+        <div class="popup-loading">
+          <div class="spin"></div>
+          <p>Finding best courier rates for you...</p>
+        </div>
+      `;
+      $("popupSubtext").innerText = `${ratePayload.fromPincode} → ${ratePayload.toPincode} · ${ratePayload.weight}kg`;
+
+      try {
+        const res = await fetch(`${BASE_URL}/api/shipment/courier/rates`, {
+          method: "POST",
+          headers: { "Content-Type":"application/json", Authorization:`Bearer ${token}` },
+          body: JSON.stringify(ratePayload)
+        });
+        const data = await res.json();
+        renderCourierOptions(data.couriers || []);
+      } catch(e) {
+        $("courierListContainer").innerHTML = `<p style="color:var(--danger);text-align:center;padding:30px;">Failed to fetch rates. Please try again.</p>`;
+        showToast("Could not fetch courier rates ❌", "#dc2626");
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = `🚀 Get Courier Rates &amp; Book`;
+    }
+
+    /* ── RENDER COURIER OPTIONS ── */
+    function renderCourierOptions(couriers) {
+      shipfastCouriers = couriers;
+
+      if (!couriers.length) {
+        $("courierListContainer").innerHTML = `
+          <div style="text-align:center;padding:40px 20px;">
+            <div style="font-size:36px;margin-bottom:12px;">😕</div>
+            <h3 style="font-size:15px;">No Couriers Available</h3>
+            <p style="font-size:13px;color:var(--muted);margin-top:6px;">Check if the pincode is serviceable.</p>
+          </div>
+        `;
         return;
       }
 
-      document.getElementById("msg").style.color = "black";
-      document.getElementById("msg").innerText = "Booking shipment... ⏳";
+      // Sort by price ascending → cheapest first gets "Best Value" badge
+      const sorted = [...couriers].sort((a,b) => (a.price||0)-(b.price||0));
 
-      // ✅ Simple Shipment Data
-      const shipmentData = {
-        customerName: customerName.value,
-        phone: phone.value,
-        address: address.value,
-        city: city.value,
-        state: state.value,
-        pincode: pincode.value,
-        orderId: orderId.value,
-        paymentMode: paymentMode.value,
-        orderValue: orderValue.value,
-        weight: weight.value
+      $("courierListContainer").innerHTML = sorted.map((c, i) => {
+        const isShipfast = c.carrier_id !== undefined;
+        const origIdx    = couriers.indexOf(c);
+        const bookParam  = isShipfast ? origIdx : `"${c.name}"`;
+
+        return `
+          <div class="courier-option" onclick="bookCourier(${bookParam})">
+            <div class="co-left">
+              ${i === 0 ? `<div class="best-badge">⭐ Best Value</div>` : ""}
+              <h4>${c.name}</h4>
+              <p>🕐 ${c.deliveryDays || "2–4"} days delivery</p>
+            </div>
+            <div class="co-right">
+              <div class="co-price">₹${c.price}</div>
+              <div class="co-days">incl. all charges</div>
+              <button class="co-select-btn" style="margin-top:8px;">Select →</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function closeCourierPopup() {
+      $("courierOverlay").classList.remove("show");
+    }
+
+    /* ── BOOK SELECTED COURIER ── */
+    async function bookCourier(courier) {
+      let finalCourier = courier;
+      let carrier_id   = null;
+
+      if (typeof courier === "number") {
+        const selected = shipfastCouriers[courier];
+        if (selected?.carrier_id) {
+          finalCourier = "shipfast";
+          carrier_id   = selected.carrier_id;
+        } else {
+          finalCourier = (selected?.name || "delhivery").toLowerCase();
+        }
+      } else {
+        finalCourier = courier.toLowerCase();
+      }
+
+      // Update container to booking state
+      $("courierListContainer").innerHTML = `
+        <div class="popup-loading">
+          <div class="spin"></div>
+          <p>Booking your shipment...</p>
+        </div>
+      `;
+
+      const payload = {
+        ...ratePayload,
+        ...shipmentPayload,
+        fromPincode: ratePayload.fromPincode,
+        courier:     finalCourier,
+        carrier_id
       };
 
-      console.log("sending data:", shipmentData);
-
       try {
-        const res = await fetch(API_URL, {
+        const res = await fetch(`${BASE_URL}/api/shipment/book`, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + token
-          },
-          body: JSON.stringify(shipmentData)
+          headers: { "Content-Type":"application/json", Authorization:`Bearer ${token}` },
+          body: JSON.stringify(payload)
         });
-
         const data = await res.json();
 
-        if (data.success) {
-          document.getElementById("msg").style.color = "green";
-
-          document.getElementById("msg").innerText =
-            "✅ Shipment Booked! Waybill: " + data.waybill + " | Order ID: " + data.orderId;
-
-        } else {
-          document.getElementById("msg").style.color = "red";
-          document.getElementById("msg").innerText =
-            data.message || "Booking Failed ❌";
+        if (!res.ok || !data.success) {
+          $("courierListContainer").innerHTML = `<p style="color:var(--danger);text-align:center;padding:30px;">❌ ${data.message||"Booking failed. Try again."}</p>`;
+          showToast("Booking failed: " + (data.message || "Unknown error"), "#dc2626");
+          return;
         }
 
-      } catch (err) {
-        document.getElementById("msg").style.color = "red";
-        document.getElementById("msg").innerText =
-          "Server Error ❌ Backend not reachable";
+        // SUCCESS
+        closeCourierPopup();
+        showSuccessScreen(data);
+
+      } catch(e) {
+        $("courierListContainer").innerHTML = `<p style="color:var(--danger);text-align:center;padding:30px;">❌ Network error. Please try again.</p>`;
+        showToast("Network error ❌", "#dc2626");
       }
     }
 
+    /* ── SUCCESS SCREEN ── */
+    function showSuccessScreen(data) {
+      // Hide all form steps and stepper
+      document.querySelectorAll(".form-step").forEach(el => el.style.display="none");
+      $("stepper").style.display = "none";
 
+      $("successDetails").innerHTML = `
+        <span class="sd-label">AWB Number</span>
+        <span class="sd-val awb-val">${data.waybill || "—"}</span>
+
+        <span class="sd-label">Order ID</span>
+        <span class="sd-val">${data.orderId || shipmentPayload.orderId || "—"}</span>
+
+        <span class="sd-label">Courier</span>
+        <span class="sd-val">${data.courier || "—"}</span>
+
+        <span class="sd-label">Receiver</span>
+        <span class="sd-val">${shipmentPayload.customerName}</span>
+
+        <span class="sd-label">Destination</span>
+        <span class="sd-val">${shipmentPayload.city}, ${shipmentPayload.pincode}</span>
+
+        <span class="sd-label">Payment Mode</span>
+        <span class="sd-val">${shipmentPayload.paymentMode}</span>
+      `;
+
+      $("successScreen").classList.add("show");
+      showToast("✅ Shipment booked successfully!", "#16a34a");
+    }
+
+    /* ── RESET FORM ── */
+    function resetForm() {
+      // Show all form steps and stepper back
+      document.querySelectorAll(".form-step").forEach(el => el.style.display="");
+      $("stepper").style.display = "";
+      $("successScreen").classList.remove("show");
+
+      // Clear fields
+      ["receiverName","receiverPhone","receiverAddress","toPincode","receiverCity",
+       "receiverState","productName","weight","orderValue","length","breadth","height"].forEach(id => {
+        const el = $(id);
+        if (el) el.value = "";
+      });
+
+      selectPayment("Pre-paid");
+      regenOrderId();
+      goStep(1);
+    }
 
     function logout() {
       localStorage.removeItem("adminToken");
+      localStorage.removeItem("customerToken");
       window.location.href = "login.html";
     }
+
+    /* ── CLOSE POPUP ON OVERLAY CLICK ── */
+    $("courierOverlay").addEventListener("click", function(e) {
+      if (e.target === this) closeCourierPopup();
+    });
+
+    /* ── INIT ── */
+    window.onload = function() {
+      regenOrderId();
+      loadWarehouses();
+    };
   </script>
 
 </body>
-
 </html>
