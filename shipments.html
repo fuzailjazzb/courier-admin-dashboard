@@ -892,7 +892,10 @@
         </div>
         <div class="detail-item" style="background:#fef3c7; color:#b45309;">
           <div class="di-val" style="font-size:13px; font-weight:500;">
-            Are you sure you want to proceed with this refund for Order <b>${s.orderId || s.waybill}</b>?
+            Are you sure you want to proceed with this refund for Order <b>${s.orderId || s.waybill}</b>?</br>
+            This action cannot be undone.</br>
+            Please confirm to initiate the refund process.</br></br>
+            Amount will be refunded to the <b>${s.delivery?.customerName || "customer"}</b> Wallet Account within 3-4 business days after processing.
           </div>
         </div>
       `;
