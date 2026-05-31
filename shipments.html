@@ -295,6 +295,14 @@
       color: var(--muted);
     }
 
+    /* Disabled Grey Button */
+    .btn-disabled { 
+      background: #e2e8f0; 
+      color: #94a3b8; 
+      cursor: not-allowed; 
+      border: 1px solid #cbd5e1;
+    }
+
     .table-wrap {
       overflow-x: auto;
     }
@@ -755,7 +763,11 @@
               <button class="btn btn-dark btn-sm" onclick="showDetails(${i})">Details</button>
               <button class="btn btn-green btn-sm" onclick="openTrack(${i})">Track</button>
               <button class="btn btn-red btn-sm" onclick="cancelShipment('${s._id}', ${i})">Cancel</button>
-              <button class="btn btn-orange btn-sm" onclick="initiateRefund('${s._id}', ${i})">Refund</button>
+              ${
+                s.refundStatus === "Refunded"
+                ? `<button class="btn btn-disabled btn-sm" disabled>Refunded</button>`
+                : `<button class="btn btn-orange btn-sm" onclick="initiateRefund('${s._id}', ${i})">Refund</button>`
+              }
             </div>
           </td>
         </tr>
