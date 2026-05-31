@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shipments — NXT Ship Admin</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
   <style>
     :root {
       --sidebar-w: 260px;
@@ -15,10 +17,22 @@
       --text: #0f172a;
       --muted: #64748b;
       --radius: 14px;
-      --shadow: 0 2px 8px rgba(0,0,0,0.07), 0 6px 20px rgba(0,0,0,0.05);
+      --shadow: 0 2px 8px rgba(0, 0, 0, 0.07), 0 6px 20px rgba(0, 0, 0, 0.05);
     }
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--bg); display:flex; min-height:100vh; color:var(--text); }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      display: flex;
+      min-height: 100vh;
+      color: var(--text);
+    }
 
     /* ── SIDEBAR ── */
     .sidebar {
@@ -26,171 +40,526 @@
       height: 100vh;
       background: linear-gradient(160deg, #0f172a 0%, #1e293b 100%);
       color: white;
-      position: fixed; top:0; left:0;
-      display:flex; flex-direction:column; z-index:100;
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
     }
-    .sidebar-logo { padding:28px 22px 20px; border-bottom:1px solid rgba(255,255,255,0.07); }
-    .sidebar-logo h2 { font-size:19px; font-weight:700; }
-    .sidebar-logo p  { font-size:11px; color:rgba(255,255,255,0.35); margin-top:3px; }
-    .sidebar-nav { padding:12px 10px; flex:1; }
+
+    .sidebar-logo {
+      padding: 28px 22px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .sidebar-logo h2 {
+      font-size: 19px;
+      font-weight: 700;
+    }
+
+    .sidebar-logo p {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.35);
+      margin-top: 3px;
+    }
+
+    .sidebar-nav {
+      padding: 12px 10px;
+      flex: 1;
+    }
+
     .sidebar-nav a {
-      display:flex; align-items:center; gap:10px;
-      padding:11px 14px; margin-bottom:3px; border-radius:10px;
-      color:rgba(255,255,255,0.7); text-decoration:none;
-      font-size:14px; font-weight:500; transition:0.18s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
+      margin-bottom: 3px;
+      border-radius: 10px;
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: 0.18s;
     }
-    .sidebar-nav a:hover { background:rgba(255,255,255,0.08); color:white; }
-    .sidebar-nav a.active { background:rgba(37,99,235,0.35); color:#93c5fd; }
-    .sidebar-bottom { padding:12px 10px; border-top:1px solid rgba(255,255,255,0.07); }
+
+    .sidebar-nav a:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+    }
+
+    .sidebar-nav a.active {
+      background: rgba(37, 99, 235, 0.35);
+      color: #93c5fd;
+    }
+
+    .sidebar-bottom {
+      padding: 12px 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
     .sidebar-bottom a {
-      display:flex; align-items:center; gap:10px;
-      padding:10px 14px; border-radius:10px;
-      color:rgba(255,255,255,0.5); text-decoration:none;
-      font-size:14px; font-weight:500; cursor:pointer; transition:0.18s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      color: rgba(255, 255, 255, 0.5);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.18s;
     }
-    .sidebar-bottom a:hover { background:rgba(220,38,38,0.15); color:#fca5a5; }
+
+    .sidebar-bottom a:hover {
+      background: rgba(220, 38, 38, 0.15);
+      color: #fca5a5;
+    }
 
     /* ── MAIN ── */
-    .main { margin-left:var(--sidebar-w); width:100%; min-height:100vh; }
+    .main {
+      margin-left: var(--sidebar-w);
+      width: 100%;
+      min-height: 100vh;
+    }
 
     /* ── TOPBAR ── */
     .topbar {
-      background:white; padding:14px 26px;
-      display:flex; justify-content:space-between; align-items:center;
-      border-bottom:1px solid var(--border);
-      position:sticky; top:0; z-index:50;
+      background: white;
+      padding: 14px 26px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
     }
-    .topbar h1 { font-size:18px; font-weight:700; }
-    .admin-badge { background:#eff6ff; color:var(--primary); padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600; }
+
+    .topbar h1 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .admin-badge {
+      background: #eff6ff;
+      color: var(--primary);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
 
     /* ── PAGE BODY ── */
-    .page-body { padding:24px 26px; }
+    .page-body {
+      padding: 24px 26px;
+    }
 
     /* ── CONTROLS ── */
     .controls {
-      display:flex; gap:12px; margin-bottom:18px; flex-wrap:wrap; align-items:center;
+      display: flex;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+      align-items: center;
     }
+
     .controls input {
-      padding:10px 13px; border-radius:8px;
-      border:1.5px solid var(--border); font-size:13px; font-family:inherit;
-      outline:none; flex:1; min-width:200px; transition:border-color 0.15s;
+      padding: 10px 13px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      flex: 1;
+      min-width: 200px;
+      transition: border-color 0.15s;
     }
-    .controls input:focus { border-color:var(--primary); }
+
+    .controls input:focus {
+      border-color: var(--primary);
+    }
+
     .controls select {
-      padding:10px 13px; border-radius:8px;
-      border:1.5px solid var(--border); font-size:13px; font-family:inherit;
-      outline:none; min-width:160px; background:white; transition:border-color 0.15s;
+      padding: 10px 13px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      min-width: 160px;
+      background: white;
+      transition: border-color 0.15s;
     }
+
     .btn {
-      padding:10px 16px; border:none; border-radius:8px;
-      font-size:13px; font-weight:700; cursor:pointer;
-      font-family:inherit; transition:0.15s; white-space:nowrap;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: 0.15s;
+      white-space: nowrap;
     }
-    .btn-primary { background:var(--primary); color:white; }
-    .btn-primary:hover { background:var(--primary-dark); }
-    .btn-ghost { background:white; color:var(--text); border:1.5px solid var(--border); }
-    .btn-ghost:hover { background:#f1f5f9; }
-    .btn-green  { background:#16a34a; color:white; }
-    .btn-green:hover  { background:#15803d; }
-    .btn-red    { background:#dc2626; color:white; }
-    .btn-red:hover    { background:#b91c1c; }
-    .btn-dark   { background:#1e293b; color:white; }
-    .btn-dark:hover   { background:#0f172a; }
-    .btn-sm { padding:6px 11px; font-size:12px; border-radius:7px; }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-ghost {
+      background: white;
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      background: #f1f5f9;
+    }
+
+    .btn-green {
+      background: #16a34a;
+      color: white;
+    }
+
+    .btn-green:hover {
+      background: #15803d;
+    }
+
+    .btn-red {
+      background: #dc2626;
+      color: white;
+    }
+
+    .btn-red:hover {
+      background: #b91c1c;
+    }
+
+    .btn-dark {
+      background: #1e293b;
+      color: white;
+    }
+
+    .btn-dark:hover {
+      background: #0f172a;
+    }
+
+    .btn-sm {
+      padding: 6px 11px;
+      font-size: 12px;
+      border-radius: 7px;
+    }
+
+    /* New Orange button for Refund */
+    .btn-orange {
+      background: #f59e0b;
+      color: white;
+    }
+
+    .btn-orange:hover {
+      background: #d97706;
+    }
 
     /* ── TABLE BOX ── */
-    .table-box { background:white; border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
+    .table-box {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
     .table-header {
-      padding:18px 22px; border-bottom:1px solid var(--border);
-      display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
     }
-    .table-header h2 { font-size:16px; font-weight:700; }
-    .table-header span { font-size:13px; color:var(--muted); }
-    .table-wrap { overflow-x:auto; }
-    table { width:100%; border-collapse:collapse; min-width:700px; }
-    thead tr { background:#f8fafc; }
+
+    .table-header h2 {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .table-header span {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+    }
+
+    thead tr {
+      background: #f8fafc;
+    }
+
     th {
-      padding:11px 14px; text-align:left;
-      font-size:11px; font-weight:700; color:var(--muted);
-      text-transform:uppercase; letter-spacing:0.5px;
-      border-bottom:1px solid var(--border); white-space:nowrap;
+      padding: 11px 14px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
     }
+
     td {
-      padding:12px 14px; font-size:13px;
-      border-bottom:1px solid #f1f5f9; color:var(--text);
+      padding: 12px 14px;
+      font-size: 13px;
+      border-bottom: 1px solid #f1f5f9;
+      color: var(--text);
     }
-    tr:last-child td { border-bottom:none; }
-    tr:hover td { background:#fafbff; }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: #fafbff;
+    }
 
     /* ── BADGES ── */
-    .badge { display:inline-flex; align-items:center; padding:4px 11px; border-radius:20px; font-size:11px; font-weight:700; }
-    .badge-green  { background:#dcfce7; color:#16a34a; }
-    .badge-yellow { background:#fef3c7; color:#b45309; }
-    .badge-blue   { background:#dbeafe; color:#1d4ed8; }
-    .badge-red    { background:#fee2e2; color:#dc2626; }
-    .badge-gray   { background:#f1f5f9; color:#475569; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 11px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .badge-green {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+
+    .badge-yellow {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .badge-blue {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .badge-red {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .badge-gray {
+      background: #f1f5f9;
+      color: #475569;
+    }
 
     /* ── ACTION BUTTONS CELL ── */
-    .actions-cell { display:flex; gap:6px; flex-wrap:wrap; }
+    .actions-cell {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
 
     /* ── POPUP ── */
     .popup-overlay {
-      display:none; position:fixed; inset:0;
-      background:rgba(0,0,0,0.55); z-index:999;
-      justify-content:center; align-items:center; padding:20px;
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      z-index: 999;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
     }
-    .popup-overlay.show { display:flex; }
+
+    .popup-overlay.show {
+      display: flex;
+    }
+
     .popup-box {
-      background:white; border-radius:18px; padding:28px;
-      width:100%; max-width:580px; max-height:88vh; overflow-y:auto;
-      box-shadow:0 20px 60px rgba(0,0,0,0.25);
-      animation:popIn 0.25s ease;
+      background: white;
+      border-radius: 18px;
+      padding: 28px;
+      width: 100%;
+      max-width: 580px;
+      max-height: 88vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+      animation: popIn 0.25s ease;
     }
-    @keyframes popIn { from{opacity:0;transform:scale(0.95)} to{opacity:1;transform:scale(1)} }
-    .popup-box h3 { font-size:17px; font-weight:700; margin-bottom:18px; display:flex; align-items:center; gap:8px; }
+
+    @keyframes popIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1)
+      }
+    }
+
+    .popup-box h3 {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
     .detail-grid {
-      display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
     }
+
     .detail-item {
-      background:#f8fafc; border-radius:8px; padding:12px 14px;
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 12px 14px;
     }
-    .detail-item .di-label { font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; }
-    .detail-item .di-val   { font-size:14px; font-weight:600; margin-top:4px; }
 
-    .timeline-box { margin-top:16px; }
-    .timeline-box h4 { font-size:14px; font-weight:700; margin-bottom:12px; }
+    .detail-item .di-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .detail-item .di-val {
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    .timeline-box {
+      margin-top: 16px;
+    }
+
+    .timeline-box h4 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
     .event {
-      display:flex; gap:12px; padding:12px;
-      border-left:3px solid var(--primary); margin-bottom:10px;
-      background:#f1f5ff; border-radius:0 10px 10px 0;
+      display: flex;
+      gap: 12px;
+      padding: 12px;
+      border-left: 3px solid var(--primary);
+      margin-bottom: 10px;
+      background: #f1f5ff;
+      border-radius: 0 10px 10px 0;
     }
-    .event .ev-dot { width:8px; height:8px; background:var(--primary); border-radius:50%; margin-top:4px; flex-shrink:0; }
-    .event .ev-body b { font-size:13px; display:block; }
-    .event .ev-body small { font-size:12px; color:var(--muted); }
 
-    .popup-footer { display:flex; gap:10px; margin-top:20px; border-top:1px solid var(--border); padding-top:18px; }
+    .event .ev-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--primary);
+      border-radius: 50%;
+      margin-top: 4px;
+      flex-shrink: 0;
+    }
+
+    .event .ev-body b {
+      font-size: 13px;
+      display: block;
+    }
+
+    .event .ev-body small {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .popup-footer {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      border-top: 1px solid var(--border);
+      padding-top: 18px;
+    }
 
     /* ── TOAST ── */
     .toast {
-      position:fixed; top:20px; right:20px; z-index:9999;
-      background:white; padding:14px 18px; border-radius:12px;
-      font-size:13px; font-weight:600;
-      box-shadow:0 10px 30px rgba(0,0,0,0.15);
-      animation:slideIn 0.3s ease; border-left:4px solid var(--primary);
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      background: white;
+      padding: 14px 18px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      animation: slideIn 0.3s ease;
+      border-left: 4px solid var(--primary);
     }
-    @keyframes slideIn { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:translateX(0)} }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(40px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0)
+      }
+    }
 
     /* ── EMPTY STATE ── */
-    .empty-state { text-align:center; padding:50px 20px; }
-    .empty-state .es-icon { font-size:44px; margin-bottom:14px; }
-    .empty-state h3 { font-size:16px; font-weight:700; }
-    .empty-state p  { font-size:13px; color:var(--muted); margin-top:6px; }
+    .empty-state {
+      text-align: center;
+      padding: 50px 20px;
+    }
+
+    .empty-state .es-icon {
+      font-size: 44px;
+      margin-bottom: 14px;
+    }
+
+    .empty-state h3 {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .empty-state p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
 
     /* ── LOADING ── */
-    .loading-row td { text-align:center; padding:28px; color:var(--muted); }
+    .loading-row td {
+      text-align: center;
+      padding: 28px;
+      color: var(--muted);
+    }
   </style>
 </head>
+
 <body>
 
   <!-- Sidebar -->
@@ -224,7 +593,7 @@
 
       <!-- Controls -->
       <div class="controls">
-        <input id="searchInput" placeholder="🔍  Search waybill or order ID..." oninput="filterData()"/>
+        <input id="searchInput" placeholder="🔍  Search waybill or order ID..." oninput="filterData()" />
         <select id="statusFilter" onchange="filterData()">
           <option value="all">All Statuses</option>
           <option value="Pending">Pending</option>
@@ -255,7 +624,9 @@
               </tr>
             </thead>
             <tbody id="shipmentTable">
-              <tr class="loading-row"><td colspan="6">Loading shipments...</td></tr>
+              <tr class="loading-row">
+                <td colspan="6">Loading shipments...</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -288,7 +659,7 @@
     let filteredShipments = [];
     let currentShipment = null;
 
-    function showToast(msg, color="#2563eb") {
+    function showToast(msg, color = "#2563eb") {
       document.querySelectorAll(".toast").forEach(t => t.remove());
       const el = document.createElement("div");
       el.className = "toast";
@@ -300,12 +671,12 @@
 
     function statusBadge(status) {
       const map = {
-        "delivered":  "badge-green",
-        "booked":     "badge-blue",
-        "cancelled":  "badge-red",
-        "pending":    "badge-yellow"
+        "delivered": "badge-green",
+        "booked": "badge-blue",
+        "cancelled": "badge-red",
+        "pending": "badge-yellow"
       };
-      const cls = map[(status||"").toLowerCase()] || "badge-gray";
+      const cls = map[(status || "").toLowerCase()] || "badge-gray";
       return `<span class="badge ${cls}">${status || "Pending"}</span>`;
     }
 
@@ -332,7 +703,7 @@
         filteredShipments = [...allShipments];
         renderTable(filteredShipments);
 
-      } catch(err) {
+      } catch (err) {
         console.error(err);
         showToast("Server Error ❌", "#dc2626");
         table.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:28px;color:#dc2626;">Server unreachable.</td></tr>`;
@@ -371,6 +742,7 @@
               <button class="btn btn-dark btn-sm" onclick="showDetails(${i})">Details</button>
               <button class="btn btn-green btn-sm" onclick="openTrack(${i})">Track</button>
               <button class="btn btn-red btn-sm" onclick="cancelShipment('${s._id}', ${i})">Cancel</button>
+              <button class="btn btn-orange btn-sm" onclick="initiateRefund('${s._id}', ${i})">Refund</button>
             </div>
           </td>
         </tr>
@@ -448,7 +820,7 @@
             </div>
           `).join("")}
         `;
-      } catch(err) {
+      } catch (err) {
         console.error(err);
         showToast("Tracking failed ❌", "#dc2626");
         const tb = document.getElementById("timelineBox");
@@ -459,7 +831,7 @@
     // ── CANCEL SHIPMENT ──
     async function cancelShipment(id, index) {
       const s = filteredShipments[index];
-      if ((s.status||"").toLowerCase() === "cancelled") {
+      if ((s.status || "").toLowerCase() === "cancelled") {
         showToast("Already cancelled", "#f97316");
         return;
       }
@@ -479,12 +851,61 @@
         } else {
           showToast("Cancel failed: " + (data.message || "Unknown error"), "#dc2626");
         }
-      } catch(err) {
+      } catch (err) {
         console.error(err);
         showToast("Server Error ❌", "#dc2626");
       }
     }
 
+    // ── REFUND SHIPMENT (NEW LOGIC) ──
+    async function initiateRefund(id, index) {
+      const s = filteredShipments[index];
+
+      // Charge nikal rahe hain (apne DB ke hisaab se variable adjust kar lena)
+      const totalCharge = parseFloat(s.shippingCharge || s.orderValue || 0);
+
+      if (isNaN(totalCharge) || totalCharge <= 0) {
+        showToast("No valid charge found to process refund.", "#f97316");
+        return;
+      }
+
+      // 80% calculate karna
+      const refundAmount = (totalCharge * 0.80).toFixed(2);
+
+      // Confirmation popup
+      const isConfirmed = confirm(
+        `Total charge deducted was ₹${totalCharge}.\n\n` + 
+        `80% of it (₹${refundAmount}) will be refunded.\n\n` + 
+        `Do you want to proceed with this refund for ${s.waybill || s.orderId}?`
+      );
+
+      if (!isConfirmed) return;
+
+      try {
+        // Backend API ko request bhej rahe hain
+        const res = await fetch(`${BACKEND_URL}/api/shipment/refund/${id}`, {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}` 
+          },
+          body: JSON.stringify({ refundAmount: refundAmount })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          showToast(`✅ Refund of ₹${refundAmount} initiated!`, "#16a34a");
+          loadShipments(); // Table update karne ke liye
+        } else {
+          showToast("Refund failed: " + (data.message || "Unknown error"), "#dc2626");
+        }
+      } catch(err) {
+        console.error(err);
+        showToast("Server Error ❌", "#dc2626");
+      }
+    }
+    
     // ── SEARCH + FILTER ──
     function filterData() {
       const search = document.getElementById("searchInput").value.toLowerCase();
@@ -495,7 +916,7 @@
           (s.orderId || "").toLowerCase().includes(search) ||
           (s.waybill || "").toLowerCase().includes(search) ||
           (s.customerName || "").toLowerCase().includes(search);
-        const matchStatus = status === "all" || (s.status||"") === status;
+        const matchStatus = status === "all" || (s.status || "") === status;
         return matchSearch && matchStatus;
       });
 
@@ -506,24 +927,24 @@
     function exportCSV() {
       if (!filteredShipments.length) { showToast("No data to export", "#f97316"); return; }
 
-      const headers = ["Waybill","Order ID","Customer","City","Status","Payment Mode","Weight","Order Value"];
+      const headers = ["Waybill", "Order ID", "Customer", "City", "Status", "Payment Mode", "Weight", "Order Value"];
       const rows = filteredShipments.map(s => [
-        `"${s.waybill||""}"`,
-        `"${s.orderId||""}"`,
-        `"${s.customerName||""}"`,
-        `"${s.city||s.deliveryCity||""}"`,
-        `"${s.status||""}"`,
-        `"${s.paymentMode||""}"`,
-        `"${s.weight||""}"`,
-        `"${s.orderValue||""}"`
+        `"${s.waybill || ""}"`,
+        `"${s.orderId || ""}"`,
+        `"${s.customerName || ""}"`,
+        `"${s.city || s.deliveryCity || ""}"`,
+        `"${s.status || ""}"`,
+        `"${s.paymentMode || ""}"`,
+        `"${s.weight || ""}"`,
+        `"${s.orderValue || ""}"`
       ]);
 
-      const csv  = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
-      const blob = new Blob([csv], { type:"text/csv" });
-      const url  = URL.createObjectURL(blob);
-      const a    = document.createElement("a");
-      a.href     = url;
-      a.download = "shipments-" + new Date().toISOString().slice(0,10) + ".csv";
+      const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "shipments-" + new Date().toISOString().slice(0, 10) + ".csv";
       a.click();
       URL.revokeObjectURL(url);
       showToast("✅ CSV exported!");
@@ -535,7 +956,7 @@
     }
 
     // Close on overlay click
-    document.getElementById("popup").addEventListener("click", function(e) {
+    document.getElementById("popup").addEventListener("click", function (e) {
       if (e.target === this) closePopup();
     });
 
@@ -548,4 +969,5 @@
   </script>
 
 </body>
+
 </html>
