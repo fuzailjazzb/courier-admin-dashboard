@@ -932,18 +932,39 @@
        FETCH COURIER RATES → OPEN POPUP
     ══════════════════════════════════════ */
     async function fetchCourierRates() {
-      const btn = $("bookBtn");
-      btn.disabled = true;
-      btn.innerHTML = `<span style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;"></span> Fetching rates...`;
-
+      // 1. WAREHOUSE SELECTION VALIDATION
       const warehouseDrop = $("warehouseSelect");
+      if (warehouseDrop.selectedIndex <= 0 || !warehouseDrop.value) {
+        showToast("Please select a Pickup Warehouse first! 🏢", "#f59e0b");
+        return; // API call rokein
+      }
+
       const selectedOption = warehouseDrop.options[warehouseDrop.selectedIndex];
       const warehouseId  = selectedOption.value;
       const fromPincode  = selectedOption.getAttribute("data-pincode");
 
+      // 2. WAREHOUSE PINCODE VALIDATION
+      if (!fromPincode || fromPincode === "null" || fromPincode === "undefined") {
+        showToast("Selected warehouse does not have a valid pincode! ❌", "#dc2626");
+        return; // API call rokein
+      }
+
+      // 3. DELIVERY PINCODE VALIDATION
+      const toPincode = getVal("toPincode");
+      if (!toPincode || toPincode.length < 6) {
+        showToast("Please enter a valid Delivery Pincode! 📍", "#f59e0b");
+        return; // API call rokein
+      }
+
+      // Button ko Loading State me daalna
+      const btn = $("bookBtn");
+      btn.disabled = true;
+      btn.innerHTML = `<span style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;"></span> Fetching rates...`;
+
+      // Payload setup
       ratePayload = {
-        fromPincode,
-        toPincode:   getVal("toPincode"),
+        fromPincode: fromPincode,
+        toPincode:   toPincode,
         weight:      getVal("weight") || "0.5",
         paymentType: selectedPayment
       };
@@ -951,7 +972,7 @@
       shipmentPayload = {
         customerName: getVal("receiverName"),
         address:      getVal("receiverAddress"),
-        pincode:      getVal("toPincode"),
+        pincode:      toPincode,
         city:         getVal("receiverCity"),
         state:        getVal("receiverState"),
         phone:        getVal("receiverPhone"),
@@ -963,7 +984,7 @@
         orderValue:   getVal("orderValue") || 0,
         paymentMode:  selectedPayment,
         orderId:      getVal("orderId"),
-        warehouseId
+        warehouseId:  warehouseId
       };
 
       // Open popup with loading state
@@ -976,23 +997,38 @@
       `;
       $("popupSubtext").innerText = `${ratePayload.fromPincode} → ${ratePayload.toPincode} · ${ratePayload.weight}kg`;
 
+      // API Call
       try {
         const res = await fetch(`${BASE_URL}/api/shipment/courier/rates`, {
           method: "POST",
           headers: { "Content-Type":"application/json", Authorization:`Bearer ${token}` },
           body: JSON.stringify(ratePayload)
         });
+        
         const data = await res.json();
-        renderCourierOptions(data.couriers || []);
+        
+        // 4. API RESPONSE VALIDATION
+        if (data.success && data.couriers && data.couriers.length > 0) {
+            renderCourierOptions(data.couriers);
+        } else {
+            // Agar API ne koi courier nahi bheja (unserviceable route)
+            $("courierListContainer").innerHTML = `
+                <div style="text-align:center; padding:30px;">
+                    <h3 style="color:#dc2626; margin-bottom:10px;">No Couriers Available</h3>
+                    <p style="color:var(--muted); font-size:14px;">Sorry, we couldn't find any serviceable couriers for this route (${ratePayload.fromPincode} to ${ratePayload.toPincode}).</p>
+                </div>`;
+        }
       } catch(e) {
+        console.error("Rate Fetch Error:", e);
         $("courierListContainer").innerHTML = `<p style="color:var(--danger);text-align:center;padding:30px;">Failed to fetch rates. Please try again.</p>`;
         showToast("Could not fetch courier rates ❌", "#dc2626");
       }
 
+      // Reset Button State
       btn.disabled = false;
-      btn.innerHTML = `🚀 Get Courier Rates &amp; Book`;
+      btn.innerHTML = `🚀 Get Courier Rates & Book`;
     }
-
+    
     /* ── RENDER COURIER OPTIONS ── */
     function renderCourierOptions(couriers) {
       shipfastCouriers = couriers;
@@ -1148,8 +1184,8 @@
           data.warehouses.forEach(w => {
             // Admin ke liye Warehouse Name + Customer Name dikhana best rehta hai
             const customerName = w.customerName ? ` - ${w.customerName}` : '';
-            warehouseDropdown.innerHTML += `
-              <option value="${w._id}">${w.name} ${customerName}</option>
+           warehouseDropdown.innerHTML += `
+              <option value="${w._id}" data-pincode="${w.pincode || ''}">${w.name} ${customerName}</option>
             `;
           });
         } else {
