@@ -700,6 +700,7 @@
         }
 
         allShipments = data.shipments || [];
+        console.log("Backend Data:", allShipments[0]);
         filteredShipments = [...allShipments];
         renderTable(filteredShipments);
 
