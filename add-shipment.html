@@ -1028,8 +1028,8 @@
       btn.disabled = false;
       btn.innerHTML = `🚀 Get Courier Rates & Book`;
     }
-    
-    /* ── RENDER COURIER OPTIONS ── */
+
+   /* ── RENDER COURIER OPTIONS ── */
     function renderCourierOptions(couriers) {
       shipfastCouriers = couriers;
 
@@ -1050,7 +1050,9 @@
       $("courierListContainer").innerHTML = sorted.map((c, i) => {
         const isShipfast = c.carrier_id !== undefined;
         const origIdx    = couriers.indexOf(c);
-        const bookParam  = isShipfast ? origIdx : `"${c.name}"`;
+        
+        // Single quotes ka use taaki string correctly pass ho
+        const bookParam  = isShipfast ? `'${origIdx}'` : `'${c.name}'`;
 
         return `
           <div class="courier-option" onclick="bookCourier(${bookParam})">
@@ -1072,14 +1074,15 @@
     function closeCourierPopup() {
       $("courierOverlay").classList.remove("show");
     }
-
-    /* ── BOOK SELECTED COURIER ── */
-    async function bookCourier(courier) {
-      let finalCourier = courier;
+/* ── BOOK SELECTED COURIER ── */
+    async function bookCourier(courierParam) {
+      let finalCourier = courierParam;
       let carrier_id   = null;
 
-      if (typeof courier === "number") {
-        const selected = shipfastCouriers[courier];
+      // Agar numeric ID (string form me) aati hai, toh wo shipfast hai
+      if (!isNaN(courierParam) && shipfastCouriers[courierParam]) {
+        const selected = shipfastCouriers[courierParam];
+        
         if (selected?.carrier_id) {
           finalCourier = "shipfast";
           carrier_id   = selected.carrier_id;
@@ -1087,7 +1090,8 @@
           finalCourier = (selected?.name || "delhivery").toLowerCase();
         }
       } else {
-        finalCourier = courier.toLowerCase();
+        // Direct string courier name
+        finalCourier = String(courierParam).toLowerCase();
       }
 
       // Update container to booking state
@@ -1103,7 +1107,7 @@
         ...shipmentPayload,
         fromPincode: ratePayload.fromPincode,
         courier:     finalCourier,
-        carrier_id
+        carrier_id:  carrier_id
       };
 
       try {
@@ -1125,11 +1129,11 @@
         showSuccessScreen(data);
 
       } catch(e) {
+        console.error("Booking Error:", e);
         $("courierListContainer").innerHTML = `<p style="color:var(--danger);text-align:center;padding:30px;">❌ Network error. Please try again.</p>`;
         showToast("Network error ❌", "#dc2626");
       }
     }
-
     /* ── SUCCESS SCREEN ── */
     function showSuccessScreen(data) {
       // Hide all form steps and stepper
