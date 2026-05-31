@@ -776,8 +776,8 @@
           <div class="detail-item"><div class="di-label">City</div><div class="di-val">${s.delivery?.city || "N/A"}</div></div>
           <div class="detail-item"><div class="di-label">Status</div><div class="di-val">${statusBadge(s.status)}</div></div>
           <div class="detail-item"><div class="di-label">Payment Mode</div><div class="di-val">${s.paymentMode || "N/A"}</div></div>
-          <div class="detail-item"><div class="di-label">Weight</div><div class="di-val">${s.weight ? s.weight + " kg" : "N/A"}</div></div>
-          <div class="detail-item"><div class="di-label">Order Value</div><div class="di-val">${s.orderValue ? "₹" + s.orderValue : "N/A"}</div></div>
+          <div class="detail-item"><div class="di-label">Weight</div><div class="di-val">${s.product?.weight ? s.product.weight + " kg" : "N/A"}</div></div>
+          <div class="detail-item"><div class="di-label">Order Value</div><div class="di-val">${s.product?.orderValue ? "₹" + s.product.orderValue : "N/A"}</div></div>
         </div>
         <div class="timeline-box" id="timelineBox">
           <h4>📍 Tracking Timeline</h4>
@@ -921,9 +921,9 @@
       try {
         const res = await fetch(`${BACKEND_URL}/api/shipment/refund/${id}`, {
           method: "POST",
-          headers: { 
+          headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}` 
+            Authorization: `Bearer ${token}`
           },
           body: JSON.stringify({ refundAmount: refundAmount })
         });
@@ -933,11 +933,11 @@
         if (data.success) {
           showToast(`✅ Refund of ₹${refundAmount} initiated!`, "#16a34a");
           closeRefundPopup(); // Refund hone ke baad popup band karna
-          loadShipments(); 
+          loadShipments();
         } else {
           showToast("Refund failed: " + (data.message || "Unknown error"), "#dc2626");
         }
-      } catch(err) {
+      } catch (err) {
         console.error(err);
         showToast("Server Error ❌", "#dc2626");
       } finally {
