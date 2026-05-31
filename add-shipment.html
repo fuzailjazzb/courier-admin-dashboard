@@ -1131,7 +1131,7 @@
       
       try {
         // Apna backend URL aur correct endpoint lagayein
-        const res = await fetch(`${BASE_URL}/api/warehouse/all`, { 
+        const res = await fetch(`${BASE_URL}/api/warehouse`, { 
           method: "GET",
           headers: { 
             "Authorization": `Bearer ${token}` 
