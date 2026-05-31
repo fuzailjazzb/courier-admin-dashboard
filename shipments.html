@@ -1012,6 +1012,48 @@
       showToast("✅ CSV exported!");
     }
 
+    // ── LOAD WAREHOUSES FOR ADMIN ──
+    async function loadWarehouses() {
+      // Yahan apne dropdown ka ID check kar lene, maine 'warehouseSelect' assume kiya hai
+      const warehouseDropdown = document.getElementById("warehouseSelect"); 
+      
+      try {
+        // Apna backend URL aur correct endpoint lagayein
+        const res = await fetch(`${BACKEND_URL}/api/warehouse/all`, { 
+          method: "GET",
+          headers: { 
+            "Authorization": `Bearer ${token}` 
+          }
+        });
+        
+        const data = await res.json();
+
+        if (data.success && data.warehouses && data.warehouses.length > 0) {
+          // Dropdown clear karein aur default option rakhein
+          warehouseDropdown.innerHTML = '<option value="">Select Warehouse</option>';
+          
+          // Saare warehouses ko loop karke options banayein
+          data.warehouses.forEach(w => {
+            // Admin ke liye Warehouse Name + Customer Name dikhana best rehta hai
+            const customerName = w.customerName ? ` - ${w.customerName}` : '';
+            warehouseDropdown.innerHTML += `
+              <option value="${w._id}">${w.name} ${customerName}</option>
+            `;
+          });
+        } else {
+          warehouseDropdown.innerHTML = '<option value="">No warehouses found</option>';
+        }
+      } catch (err) {
+        console.error("Failed to load warehouses:", err);
+        warehouseDropdown.innerHTML = '<option value="">Error loading warehouses</option>';
+      }
+    }
+
+    // Page load hote hi is function ko call karein
+    window.onload = () => {
+      loadWarehouses();
+    };
+
     function closePopup() {
       document.getElementById("popup").classList.remove("show");
       currentShipment = null;
